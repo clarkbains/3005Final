@@ -1,0 +1,18 @@
+version: '2'
+services:
+  3005be:
+    container_name: 30005be
+    build: ./backend
+    image: connect4
+    restart: always
+    ports:
+      - '9756:80'
+    volumes:
+      - './data/backend:/data:z'
+  3005fe:
+    container_name: 30005fe
+    build: ./frontend
+    image: connect4
+    restart: always
+    ports:
+      - '9757:80'
