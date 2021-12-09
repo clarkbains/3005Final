@@ -12,7 +12,7 @@ services:
   3005fe:
     container_name: 30005fe
     build: ./frontend
-    image: 3005be
+    image: 3005fe
     restart: always
     ports:
       - '9757:80'
