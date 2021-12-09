@@ -1,7 +1,7 @@
 version: '2'
 services:
   3005be:
-    container_name: 30005be
+    container_name: 3005be
     build: ./backend
     image: 3005be
     restart: always
@@ -10,7 +10,7 @@ services:
     volumes:
       - './data/backend:/data:z'
   3005fe:
-    container_name: 30005fe
+    container_name: 3005fe
     build: ./frontend
     image: 3005fe
     restart: always
