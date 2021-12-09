@@ -29,9 +29,27 @@ app.post("/", (req, res)=>{
     }
     res.status(200).send("OK")
 })
-app.get("/logs", (req, res)=>{
+app.get("/logs/fe", (req, res)=>{
     //todo: use name from docker-compose.yml
-    exec("docker logs connect4 | tail -n 1000 | perl -e 'print reverse <>'", function callback(udErr, udOut, udStdErr) {
+    exec("docker logs 3005fe | tail -n 1000 | perl -e 'print reverse <>'", function callback(udErr, udOut, udStdErr) {
+	res.setHeader('Content-Type', 'text/plain');
+        if (true == (udErr || udStdErr)) {
+            console.log("Pull err")
+            res.status(500).send(`Error Pulling Logs: \n ${udErr} \n ${udStdErr}`)
+        }
+        else if (udOut){
+            udOut = udOut.replace(/^\*\*.*$/gm, "--Line Removed From Logs--")
+            res.status(200).send(`Got Logs: \n ${udOut}`)
+
+        } else {
+            res.status(500).send("Something happened.")
+        }
+
+})})
+
+app.get("/logs/be", (req, res)=>{
+    //todo: use name from docker-compose.yml
+    exec("docker logs 3005be | tail -n 1000 | perl -e 'print reverse <>'", function callback(udErr, udOut, udStdErr) {
 	res.setHeader('Content-Type', 'text/plain');
         if (true == (udErr || udStdErr)) {
             console.log("Pull err")
