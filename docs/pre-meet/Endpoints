@@ -1,0 +1,51 @@
+*Allow CORS for current deployment
+Patch will only update included attributes.
+Will get sessionid regardless of if authed. Used for anon carts
+dates are unix timestamps (s).
+
+/api
+    /user
+        POST / newUser.js as req obj.
+        PATCH / newUser.js with admin attr available if using admin accnt
+        GET  /:id (admin and self id allowed) or /me
+        /address
+            GET / [{id:"", all stuff in POST}]
+            POST / {country:"", city:"", state:"", code:"POSTAL", streenNum:"", street:"", notes:""}
+            PATCH /:id
+
+    /session
+        POST / auth.js as req. Sets cookie
+        DELETE / Clears cookie
+    /genres
+        GET /&name= (wildcards around term) 
+             ?pages=[False]|True        -> [{name:"", genreid:0}]
+        POST / (admin) {name:""}
+    /authors
+        GET /&name= (wildcards around term)
+             ?pages=[False]|True        -> [{name:"", authorid:0}]
+        POST / (admin) {name:""}    
+    /book (admin req/res includes the royalty amount + attrs from book.js)
+        POST / (admin only)
+        PATCH / (admin only)
+        GET /:id (admin only)
+    /books (paginated)  & isbn  = (exact)
+                        ? title = (search with wildcards on ends of query)
+                        ? genre = (csv genre ids)
+                        ? author= (csv, wildcards appended to each term for dbms select)
+                        ? price = (lt|gt)price  -> [book.js]
+    /carts ?? Need to figure out how carts are stored
+        GET / -> {shoppingcartid:0, items: [{bookid: bookid, cartid:cartid, quantity:1}] cartid is elm in cart, id is cart itself.
+        PUT / {bookid: bookid, quantity: 1} -> {bookid: bookid, cartid:cartid}
+        DELETE /:cartid //removes item from cart
+        PATCH  /:cartid {quantity:0} (0 will autodelete from cart)
+    /orders
+        GET /&orderid=optional (admin returns all, user returns theirs) (pageinated) [{date:0, orderid:0 shoppingcartid:00, addressid:7897, tracking:"797", carrier:"Canada Post"}]
+        GET /tracking/:orderid
+        POST / {shoppingcartid:00, addressid:7897, billingid:678, notes: 789}
+
+    /reports (admin only)
+        GET / -> [{name: "", parameters: [{type:"date|string|number", label:"min price", default:""}], info:"Report to get x"}]
+        GET /:name?parameter.name=userval -> HTML blob, just chuck it in the DOM. 
+
+
+Cart name? S
