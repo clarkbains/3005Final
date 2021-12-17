@@ -1,0 +1,50 @@
+One to one relations total participation is "pulled into" each other.
+
+Billing_info(userid, card_number, ccv, exp_month, exp_day)
+
+
+User(userid, username, password, email, phone, admin)
+
+Every User has a unique userid
+Usernames are unique
+
+
+User_orders(userid, orderid)
+
+User_Address(userid, addressid)
+Address(addressid, country, province, code, street_number, street)
+
+Every address has a unique addressid
+code -> province
+
+
+
+Orders(orderid, tracking_number, carrier, date, price)
+tracking_number -> carrier
+Every order has a unique orderid,
+
+
+OrderIterms(orderid, isbn, quantity)
+orderid, isbn -> quantity
+
+Book(isbn, title, papges, sale_price, purchase_price, coverURL, available, quantity)
+isbn->everything
+
+
+Publisher(publisherid, name, email, phone, addressid, branch_transit, financial_institution, account_number)
+publisherid -> everything
+
+
+Genre(genreid, name)
+genreid->name
+Author(authorid, name)
+authorid->name
+
+Book_genre(isbn, genreid)
+Book_author(isbn, authorid)
+
+Book_publisher(isbn, publisherid, royalty)
+isbn->all
+
+Publisher_orders(pub_orderid, isbn, publisherid, datem quantity, recieved, price)
+
