@@ -1,0 +1,13 @@
+No cart. Done in local storage
+
+Deleted books are only ever marked as unavailable. This allows valid reports to be generated
+
+Orders aren't filled immediately. To be more realistic, a publisher order being present means the "email" was sent out, while recieved means it arrived at the store. This will simply be set to true for all false tupples periodically as there is no real store to do this with.
+every book has a unique isbn.
+
+publisher orders can only be for one book at once.
+
+Order can have 1 quantity of a specific item. So maybe 4xbook1 and 3xbook2, but not 2xbook1 and 3xbook1 and 3xbook2.
+
+publisher can only have one bank account, and it must be unique per publisher
+

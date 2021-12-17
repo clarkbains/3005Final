@@ -1,5 +1,8 @@
 FROM mhart/alpine-node
+RUN apk add dumb-init
 WORKDIR /app
-RUN touch backend
-CMD npx -y http-server . -p 80
+COPY package*json ./
+RUN npm i
+COPY ./src src
+CMD ["node", "src/index.js"]
 EXPOSE 80/tcp
