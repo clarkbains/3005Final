@@ -1,17 +1,24 @@
 const express = require('express')
 const session = require('cookie-session')
 const middleWare = require('./middleware')
+const initTime = new Date()
 let app = express()
-const db = require('./db')
-app.use(express.json())
-app.use(middleWare.addDb)
-app.use(session({secret:"foobar"}))
-app.options("/**", (req,res)=>{res.header("Access-Control-Allow-Origin", "*");})
-app.use("/session", require('./session'))
-app.use("/user", require('./user'))
-console.log("Started!")
+let API = express.Router()
+API.use(express.json())
+API.use(middleWare.addDb)
+API.use(session({secret:"foobar"}))
+API.options("/**", (req,res)=>{res.header("Access-Control-Allow-Origin", "*");})
+API.use("/session", require('./session'))
+API.use("/user", require('./user'))
+API.use("/genres", require('./genres'))
+app.use("/api", API)
+
+app.get("/",(req,res)=>{
+    res.send(`Server running since ${initTime}`)
+})
 
 
 
 app.listen(80)
+console.log("Init")
 

@@ -8,8 +8,35 @@ superset = function (keys) {
         next()
     }
 }
+bounds = function(num, lower, upper){
+    num = Number(num)
+    if ([undefined, null].includes(num) || Number.isNaN(num)){
+        return (upper-lower)/2 + lower
+    }
+    return num < lower ? lower:((num > upper)?upper:num)
+}
 
-paginator = function (options) {
+//Better way to do this?
+paginator = function (getData, getCountCB) {
+    return (req)=>{
+      let count = getCountCB()
+      let size = bounds(Number(req.query.size),1,100)
+      let pageNum = (Number(req.query.size)) - 1
+      let totalPages = Math.ceil(count/size)
+      pageNum = bounds(0, totalPages-1)
+      let paginationString = ` LIMIT ${size} OFFSET ${pageNum*size}`
+      items = getData(paginationString)
+      return {
+          meta: {
+              page: pageNum + 1,
+              limit: size,
+              total: count,
+              count: items.length
+          },
+          items: items
+      }
+    }
+    
     pagesize
 
 }
@@ -46,8 +73,21 @@ filterObj = function (obj, keys) {
     return n
 }
 
-
+admin = function (req,res,next){
+    if (req.session.user.admin){
+        next()
+    } else {
+        res.status(403).send({})
+    }
+}
+user = function (req,res,next){
+    if (req.session.user.userid){
+        next()
+    } else {
+        res.status(403).send({})
+    }
+}
 
 module.exports = {
-    superset, getFromBody, systemError, reqError, filterObj
+    superset, getFromBody, systemError, reqError, filterObj, admin, user
 }

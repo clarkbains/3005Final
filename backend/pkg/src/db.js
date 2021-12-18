@@ -18,7 +18,12 @@ function init() {
         let DDLs = d.split(/^[\s\n]*$/gm)
         r.acquire().then(db => {
             DDLs.forEach(e=>db.prepare(e).run())
-            db.close().release()
+            return db
+        }).then(db=>{
+            let seeds = String(fs.readFileSync(path.join(SQL_FOLDER, "SEED"))).split(/^[\s\n]*$/gm).map(e=>e.replace(/^[\s\n]*/g, "").replace(/[\s\n]*$/g, ""))
+            console.log(seeds)
+            seeds.forEach(e=>db.prepare(e).run())
+            db.release()
         })
     }
     return r

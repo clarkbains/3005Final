@@ -1,18 +1,17 @@
 const express = require('express')
 const session = require('cookie-session')
 const utils = require('./utils')
-const pool = require('./db')
 
 
 let router = express.Router()
 router.post("/", utils.superset(["username", "password"]),(req,res)=>{
-    let db = pool.acquire()
-    let r = db.prepare("SELECT * FROM Users where username = ? AND password = ? ").get(req.body.username, req.body.password)
+    let r = req.db.prepare("SELECT username, userid, admin FROM Users where username = ? AND password = ? ").get(req.body.username, req.body.password)
     if (r){
         req.session.user = r
-    } 
-    req.session.user
-    res.send("ok")
+        res.json(r)
+    } else {
+        res.status(401).json({})
+    }
 })
 
 router.delete ("/", (req,res)=>{
