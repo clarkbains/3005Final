@@ -17,12 +17,17 @@ function init() {
         let d = String(fs.readFileSync(path.join(SQL_FOLDER, "DDL")))
         let DDLs = d.split(/^[\s\n]*$/gm)
         r.acquire().then(db => {
-            DDLs.forEach(e=>db.prepare(e).run())
+            DDLs.filter(e=>!!e).forEach(e=>db.prepare(e).run())
             return db
         }).then(db=>{
-            let seeds = String(fs.readFileSync(path.join(SQL_FOLDER, "SEED"))).split(/^[\s\n]*$/gm).map(e=>e.replace(/^[\s\n]*/g, "").replace(/[\s\n]*$/g, ""))
-            console.log(seeds)
-            seeds.forEach(e=>db.prepare(e).run())
+            let seeds = String(fs.readFileSync(path.join(SQL_FOLDER, "SEED"))).split(/^[\s\n]*$/gm).map(e=>e.replace(/^[\s\n]*/g, "").replace(/[\s\n]*$/g, "")).filter(e=>!!e)
+            //console.log(seeds)
+            seeds.forEach(e=>{
+                try {
+                    db.prepare(e).run()
+                } catch (er){
+                    console.log(er, e)
+                }})
             db.release()
         })
     }

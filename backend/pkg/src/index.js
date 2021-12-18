@@ -11,6 +11,9 @@ API.options("/**", (req,res)=>{res.header("Access-Control-Allow-Origin", "*");})
 API.use("/session", require('./session'))
 API.use("/user", require('./user'))
 API.use("/genres", require('./genres'))
+API.use("/authors", require('./authors'))
+API.use("/books", require('./books'))
+
 app.use("/api", API)
 
 app.get("/",(req,res)=>{

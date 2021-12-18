@@ -64,6 +64,15 @@ reqError = function (res, e, msg, detail){
     res.status(400).json(eo)
     console.warn(e)
 }
+filterFromObj = function (obj, keys) {
+    let n = {}
+    for (let k of Object.keys(obj)){
+        if (!keys.contains(k)){
+            n[k] = obj[k]
+        }
+    }
+    return n
+}
 
 filterObj = function (obj, keys) {
     let n = {}
@@ -91,5 +100,5 @@ user = function (req,res,next){
 }
 
 module.exports = {
-    superset, getFromBody, systemError, reqError, filterObj, admin, user,paginator
+    superset, getFromBody, systemError, reqError, filterObj, admin, user,paginator, filterFromObj
 }

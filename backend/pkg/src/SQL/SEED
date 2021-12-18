@@ -11,3 +11,50 @@ INSERT INTO Genres (name) VALUES ('fiction')
 INSERT INTO Genres (name) VALUES ('graphic')
 
 INSERT INTO Genres (name) VALUES ('self help')
+
+INSERT INTO Authors (name) VALUES ('Ronald Mcdonald')
+
+INSERT INTO Authors (name) VALUES ('Canadian Author')
+
+INSERT INTO Authors (name) VALUES ('Dean Craig Pelton')
+
+INSERT INTO Authors (name) VALUES ('Another name that also includes Craig')
+
+INSERT INTO Authors (name) VALUES ('Billie')
+
+INSERT INTO Authors (name) VALUES ('Brent')
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11101', 'Title1', 881, 17.05, 13, 'http://images/11101', 1)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11102', 'Title2', 801, 13.05, 1, 'http://images/11105', 0)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11103', 'Title3', 801, 14.45, 1, 'http://images/11105', 1)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11109', 'The great canadian cookbook', 40, 30.05, 1, 'http://images/11102', 1)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11112', 'The great american cookbook', 90, 20.05, 1, 'http://images/food', 1)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('111145', 'NatGeo natural edition', 23, 6, 1, 'http://images/nature', 1)
+
+INSERT INTO book_genres (genreid, isbn) VALUES ('3', '11112')
+
+INSERT INTO book_genres (genreid, isbn) VALUES ('2', '11112')
+
+INSERT INTO book_genres (genreid, isbn) VALUES ('2', '11103')
+
+INSERT INTO book_genres (genreid, isbn) VALUES ('5', '11101')
+
+INSERT INTO book_authors (authorid, isbn) VALUES ('3', '11112')
+
+INSERT INTO book_authors (authorid, isbn) VALUES ('4', '11112')
+
+INSERT INTO book_authors (authorid, isbn) VALUES ('2', '11109')
+
+INSERT INTO book_authors (authorid, isbn) VALUES ('1', '111145')
+
+INSERT INTO book_authors (authorid, isbn) VALUES ('2', '111145')
+
+INSERT INTO book_authors (authorid, isbn) VALUES ('4', '111145')
+
+INSERT INTO book_authors (authorid, isbn) VALUES ('5', '111145')
+
