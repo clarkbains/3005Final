@@ -1,0 +1,10 @@
+version: '2'
+services:
+  3005be:
+    container_name: 3005be
+    build: .
+    image: 3005be
+    ports:
+      - '9756:80'
+    volumes:
+      - '../data/backend:/data:z'

@@ -6,7 +6,7 @@ dates are unix timestamps (s).
 /api
     /user
         POST / newUser.js as req obj.
-        PATCH / newUser.js with admin attr available if using admin accnt
+        PATCH /me /:id newUser.js with admin attr available if using admin accnt
         GET  /:id (admin and self id allowed) or /me
         /address
             GET / [{id:"", all stuff in POST}]
