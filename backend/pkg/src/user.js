@@ -17,6 +17,8 @@ router.post("/", utils.superset(["username", "password", "email", "phone"]),(req
         utils.reqError(res, e, e.message)
     }
 })
+router.use ("/:id", utils.user, utils.superset(["id"], "params"), require('./individualUser'))
+
 router.get("/:id", (req, res, next)=>{
     if (req.params.id == "me"){
         req.params.id = req.session.user.userid
@@ -25,7 +27,7 @@ router.get("/:id", (req, res, next)=>{
         if (req.params.id != req.session.user.userid && !req.session.user.admin){
             throw new Error("Only administrators can patch another user.")
         }
-        
+
         let r = req.db.prepare("SELECT username, email, phone, admin FROM Users WHERE userid = ?").get(req.params.id)
         res.json(r)
     } catch (e) {

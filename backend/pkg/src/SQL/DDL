@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS
     Address (
         `addressid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
         `country` TEXT NOT NULL,
+        `city` TEXT NOT NULL,
         `province` TEXT NOT NULL,
         `postal` TEXT NOT NULL,
         `street_number` NOT NULL,
