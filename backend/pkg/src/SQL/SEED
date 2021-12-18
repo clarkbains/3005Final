@@ -1,3 +1,13 @@
 INSERT INTO Users (username, password, email, phone) VALUES ('foo', 'test', 'test@email.com', '737111');
 
 INSERT INTO Users (username, password, email, phone, admin) VALUES ('root', 'toor', 'root@localhost', '010119070', 1);
+
+INSERT INTO Genres (name) VALUES ('YA')
+
+INSERT INTO Genres (name) VALUES ('non-fiction')
+
+INSERT INTO Genres (name) VALUES ('fiction')
+
+INSERT INTO Genres (name) VALUES ('graphic')
+
+INSERT INTO Genres (name) VALUES ('self help')

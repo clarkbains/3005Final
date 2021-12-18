@@ -1,10 +1,11 @@
-superset = function (keys) {
+superset = function (keys, place) {
     return (req, res, next)=>{
-        let l = keys.filter(e=>req.body[e]===undefined)
+        let d = req[place ?? "body"]
+        let l = keys.filter(e=>d[e]===undefined)
         if (l.length > 0){
             return next("Missing keys in req body: " + l.join(", "))
         }
-        res.locals.checked = keys.map(e=>req.body[e])
+        res.locals.checked = keys.map(e=>d[e])
         next()
     }
 }
@@ -20,24 +21,25 @@ bounds = function(num, lower, upper){
 paginator = function (getData, getCountCB) {
     return (req)=>{
       let count = getCountCB()
-      let size = bounds(Number(req.query.size),1,100)
-      let pageNum = (Number(req.query.size)) - 1
+      let size = Math.trunc(bounds(Number(req.size),1,100))
+      let requestedPage = Math.trunc(Number((req?.page ?? 1) - 1))
       let totalPages = Math.ceil(count/size)
-      pageNum = bounds(0, totalPages-1)
-      let paginationString = ` LIMIT ${size} OFFSET ${pageNum*size}`
+      requestedPage = bounds(requestedPage, 0, totalPages-1)
+      let paginationString = ` LIMIT ${size} OFFSET ${requestedPage*size}`
+      console.log({count, size, totalPages, requestedPage})
       items = getData(paginationString)
       return {
           meta: {
-              page: pageNum + 1,
-              limit: size,
-              total: count,
-              count: items.length
+              pageNumber: requestedPage+1,
+              pageSizeLimit: size,
+              totalItemsCount: count,
+              pageSizeCurrent: items.length
           },
           items: items
       }
     }
     
-    pagesize
+    
 
 }
 getFromBody = function (req, params){
@@ -89,5 +91,5 @@ user = function (req,res,next){
 }
 
 module.exports = {
-    superset, getFromBody, systemError, reqError, filterObj, admin, user
+    superset, getFromBody, systemError, reqError, filterObj, admin, user,paginator
 }
