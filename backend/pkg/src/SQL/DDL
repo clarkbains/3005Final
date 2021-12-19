@@ -17,16 +17,6 @@ CREATE TABLE IF NOT EXISTS
         CONSTRAINT `user_id_fk` FOREIGN KEY (`userid`) REFERENCES Users(`userid`) ON DELETE CASCADE,
         PRIMARY KEY(`userid`, `card_number`, `ccv`, `exp_month`, `exp_year`));
 
-
-
-CREATE TABLE IF NOT EXISTS
-    User_Orders (
-        `userid` INTEGER NOT NULL,
-        `orderid` INTEGER NOT NULL,
-        CONSTRAINT `user_id_fk` FOREIGN KEY (`userid`) REFERENCES Users(`userid`),
-        CONSTRAINT `order_id_fk` FOREIGN KEY (`orderid`) REFERENCES Orders(`orderid`),
-        PRIMARY KEY(`userid`, `orderid`));
-
 CREATE TABLE IF NOT EXISTS
     Address (
         `addressid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
@@ -63,20 +53,33 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     Orders (
         `orderid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        `userid` INTEGER NOT NULL,
         `tracking_number` TEXT NOT NULL,
         `carrier` TEXT NOT NULL,
-        `date` INTEGER NOT NULL,
-        `price` REAL NOT NULL);
+        `date` INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+        `price` REAL NOT NULL DEFAULT (0),
+        `royalties` REAL NOT NULL DEFAULT (0),
+        CONSTRAINT `user_id_fk` FOREIGN KEY (`userid`) REFERENCES Users(`userid`));
 
 CREATE TABLE IF NOT EXISTS
     Order_Items (
         `orderid` INTEGER NOT NULL,
         `isbn` INTEGER NOT NULL,
-        `quantity` INTEGER NOT NULL,
+        `quantity` INTEGER NOT NULL DEFAULT (1),
         CONSTRAINT `isbn_fk` FOREIGN KEY (`isbn`) REFERENCES Books(`isbn`),
         CONSTRAINT `order_id_fk` FOREIGN KEY (`orderid`) REFERENCES Orders(`orderid`),
         PRIMARY KEY (`orderid`, `isbn`));
 
+CREATE TRIGGER IF NOT EXISTS updateOrder
+    after insert on Order_Items
+    BEGIN
+    --SQLite doesn't support vars, so nested selects
+    UPDATE Orders 
+        SET
+         royalties=royalties+(NEW.quantity * (SELECT sale_price*royalty from Books where Books.isbn = NEW.isbn)), 
+         price=price+(NEW.quantity * (SELECT sale_price from Books where Books.isbn = NEW.isbn)) 
+        where orderid = NEW.orderid;
+    END
 
 
 

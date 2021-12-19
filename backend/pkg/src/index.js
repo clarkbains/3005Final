@@ -15,7 +15,7 @@ API.use("/authors", require('./authors'))
 API.use("/books", require('./books'))
 API.use("/publishers", require('./publisher'))
 API.use("/reports", require('./reports'))
-
+API.use("/orders", require('./orders'))
 app.use("/api", API)
 
 app.get("/",(req,res)=>{
@@ -25,5 +25,6 @@ app.get("/",(req,res)=>{
 
 
 app.listen(80)
+require('./tracking-api')
 console.log("Init")
 
