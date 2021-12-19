@@ -47,14 +47,10 @@ CREATE TABLE IF NOT EXISTS
         `quantity` INTEGER NOT NULL DEFAULT (0),
         `publisherid` INTEGER NOT NULL,
         `royalty` REAL NOT NULL,
-        CONSTRAINT `publisherid` FOREIGN KEY (`publisherid`) REFERENCES Publishers(`publisherid`),
+        CONSTRAINT `publisherid` FOREIGN KEY (`publisherid`) REFERENCES Publishers(`publisherid`), 
         CHECK(quantity >= 0)
         );
 
-NOTDONEYETCREATE TRIGGER IF NOT EXISTS mfcOrders
-    after update on Books WHEN NEW.quantity < 10 AND available != 0
-    BEGIN
-    END
 
 CREATE TABLE IF NOT EXISTS
     Orders (
@@ -75,22 +71,6 @@ CREATE TABLE IF NOT EXISTS
         CONSTRAINT `isbn_fk` FOREIGN KEY (`isbn`) REFERENCES Books(`isbn`),
         CONSTRAINT `order_id_fk` FOREIGN KEY (`orderid`) REFERENCES Orders(`orderid`),
         PRIMARY KEY (`orderid`, `isbn`));
-
-CREATE TRIGGER IF NOT EXISTS updateOrder
-    after insert on Order_Items
-    BEGIN
-    --SQLite doesn't support vars, so nested selects
-    UPDATE Orders 
-        SET
-         royalties=royalties+(NEW.quantity * (SELECT sale_price*royalty from Books where Books.isbn = NEW.isbn)), 
-         price=price+(NEW.quantity * (SELECT sale_price from Books where Books.isbn = NEW.isbn)) 
-        where orderid = NEW.orderid;
-    UPDATE Books 
-        SET
-         quantity=quantity-(NEW.quantity) 
-        where Books.isbn = NEW.isbn;
-    END
-
 
 
 CREATE TABLE IF NOT EXISTS
@@ -137,9 +117,12 @@ CREATE TABLE IF NOT EXISTS
         `publisher_orderid` INTEGER PRIMARY KEY NOT NULL UNIQUE,
         `publisherid` INTEGER NOT NULL,
         `isbn` INTEGER NOT NULL,
-        `order_date` INTEGER NOT NULL,
+        `order_date` INTEGER NOT NULL DEFAULT(strftime('%s', 'now')),
         `quantity` INTEGER NOT NULL,
-        `recieved` INTEGER NOT NULL DEFAULT (0),
+        `received` INTEGER NOT NULL DEFAULT (0),
         `price` REAL NOT NULL,
         CONSTRAINT `isbn_fk` FOREIGN KEY (`isbn`) REFERENCES Books(`isbn`),
-        CONSTRAINT `publisherid_fk` FOREIGN KEY (`publisherid`) REFERENCES Publishers(`publisherid`));
+        CONSTRAINT `publisherid_fk` FOREIGN KEY (`publisherid`) REFERENCES Publishers(`publisherid`),
+        CHECK(received >= 0 AND received <= quantity),
+        CHECK(quantity>=0));
+  

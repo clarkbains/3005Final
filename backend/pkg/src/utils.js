@@ -30,7 +30,7 @@ paginator = function (getData, getCountCB) {
       let totalPages = Math.ceil(count/size)
       requestedPage = bounds(requestedPage, 0, totalPages-1)
       let paginationString = ` LIMIT ${size} OFFSET ${requestedPage*size}`
-      console.log({count, size, totalPages, requestedPage})
+      //console.log({count, size, totalPages, requestedPage})
       items = await getData(paginationString)
       return {
           meta: {
@@ -98,17 +98,17 @@ checkObject = function (o){
 }
 
 admin = function (req,res,next){
-    if (req.session.user.admin){
+    if (req.session?.user?.admin){
         next()
     } else {
-        res.status(403).send({})
+        res.status(403).json({})
     }
 }
 user = function (req,res,next){
-    if (req.session.user.userid){
+    if (req.session?.user?.userid){
         next()
     } else {
-        res.status(403).send({})
+        res.status(403).json({})
     }
 }
 

@@ -1,3 +1,4 @@
+//This is not meant to be a part of the database design, as it just saves its data to a serialized JSON blob. It is just meant to emulate what a 3rd party carrier may have.
 const express = require('express')
 const SAVE_LOC = "/data/tracking"
 const carriers = ["Intellicom", "Canada Post", "Dicom"]

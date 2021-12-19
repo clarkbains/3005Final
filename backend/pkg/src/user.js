@@ -13,11 +13,11 @@ const meMiddleware = (req,res,next)=>{
 
 router.post("/", utils.superset(["username", "password", "email", "phone"]),(req,res)=>{
     try {
-        console.log(req.db.prepare("SELECT * from Users;").get())
         let r = req.db.prepare("INSERT INTO Users (username, password, email, phone) VALUES (?, ?, ?, ?)").run(res.locals.checked)
         if (r){
-            let uo = req.db.prepare("SELECT * from Users where userid = ?").get(r.lastInsertRowid)
-            delete uo.password
+            let uo = utils.filterObj(req.body, ["username", "email", "phone"])
+            uo.userid = r.lastInsertRowid
+
             req.session.user = uo
             res.json(uo)
         } 
@@ -99,7 +99,7 @@ router.get ("/:id/billing", utils.user, meMiddleware, (req,res)=>{
 router.get("/:id", utils.user, meMiddleware, (req, res, next)=>{
     try {
         if (req.params.id != req.session.user.userid && !req.session.user.admin){
-            throw new Error("Only administrators can patch another user.")
+            throw new Error("Only administrators can get for another user.")
         }
 
         let r = req.db.prepare("SELECT username, email, phone, admin FROM Users WHERE userid = ?").get(req.params.id)
