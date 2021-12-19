@@ -7,9 +7,9 @@ let app = express()
 let API = express.Router()
 API.use(express.json())
 API.use(session({secret:"foobar"}))
-
+//foobarr
 API.use("/**", (req,res,next)=>{
-    res.header("Access-Control-Allow-Origin", "localhost:3000");res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cookies"); 
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cookies"); 
     res.header(" Access-Control-Allow-Credentials", "true")
     req.sessionOptions.domain = req.headers.host
     next()
