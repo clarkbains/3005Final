@@ -19,19 +19,19 @@ bounds = function(num, lower, upper){
 
 //Better way to do this?
 paginator = function (getData, getCountCB) {
-    return (req)=>{
+    return async (req)=>{
      
       if (req?.nopages ?? false){
         return getData("")
       }
-      let count = getCountCB()
+      let count = await getCountCB()
       let size = Math.trunc(bounds(Number(req.size),1,100))
       let requestedPage = Math.trunc(Number((req?.page ?? 1) - 1))
       let totalPages = Math.ceil(count/size)
       requestedPage = bounds(requestedPage, 0, totalPages-1)
       let paginationString = ` LIMIT ${size} OFFSET ${requestedPage*size}`
       console.log({count, size, totalPages, requestedPage})
-      items = getData(paginationString)
+      items = await getData(paginationString)
       return {
           meta: {
               pageNumber: requestedPage+1,

@@ -1,7 +1,7 @@
 const { Pool } = require('better-sqlite-pool');
 const path = require('path')
 const fs = require('fs')
-const WIPE_AT_START = false
+const WIPE_AT_START = true
 const SQL_FOLDER = path.join(__dirname, "SQL")
 
 function init() {
@@ -17,7 +17,14 @@ function init() {
         let d = String(fs.readFileSync(path.join(SQL_FOLDER, "DDL")))
         let DDLs = d.split(/^[\s\n]*$/gm)
         r.acquire().then(db => {
-            DDLs.filter(e=>!!e).forEach(e=>db.prepare(e).run())
+            
+                DDLs.filter(e=>!!e).forEach(e=>{
+                    try{
+                        db.prepare(e).run()
+                    } catch (er){
+                        console.log(er, e)
+                    }
+                })
             return db
         }).then(db=>{
             let seeds = String(fs.readFileSync(path.join(SQL_FOLDER, "SEED"))).split(/^[\s\n]*$/gm).map(e=>e.replace(/^[\s\n]*/g, "").replace(/[\s\n]*$/g, "")).filter(e=>!!e)

@@ -47,8 +47,14 @@ CREATE TABLE IF NOT EXISTS
         `quantity` INTEGER NOT NULL DEFAULT (0),
         `publisherid` INTEGER NOT NULL,
         `royalty` REAL NOT NULL,
-        CONSTRAINT `publisherid` FOREIGN KEY (`publisherid`) REFERENCES Publishers(`publisherid`)
+        CONSTRAINT `publisherid` FOREIGN KEY (`publisherid`) REFERENCES Publishers(`publisherid`),
+        CHECK(quantity >= 0)
         );
+
+NOTDONEYETCREATE TRIGGER IF NOT EXISTS mfcOrders
+    after update on Books WHEN NEW.quantity < 10 AND available != 0
+    BEGIN
+    END
 
 CREATE TABLE IF NOT EXISTS
     Orders (
@@ -79,6 +85,10 @@ CREATE TRIGGER IF NOT EXISTS updateOrder
          royalties=royalties+(NEW.quantity * (SELECT sale_price*royalty from Books where Books.isbn = NEW.isbn)), 
          price=price+(NEW.quantity * (SELECT sale_price from Books where Books.isbn = NEW.isbn)) 
         where orderid = NEW.orderid;
+    UPDATE Books 
+        SET
+         quantity=quantity-(NEW.quantity) 
+        where Books.isbn = NEW.isbn;
     END
 
 

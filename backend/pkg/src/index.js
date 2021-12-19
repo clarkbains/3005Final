@@ -2,11 +2,15 @@ const express = require('express')
 const session = require('cookie-session')
 const middleWare = require('./middleware')
 const initTime = new Date()
+const path = require('path')
 let app = express()
 let API = express.Router()
 API.use(express.json())
 API.use(middleWare.addDb)
 API.use(session({secret:"foobar"}))
+app.set('views', path.join(__dirname, "templates"));
+app.set('view-engine', 'ejs');
+
 API.options("/**", (req,res)=>{res.header("Access-Control-Allow-Origin", "*");})
 API.use("/session", require('./session'))
 API.use("/user", require('./user'))

@@ -3,7 +3,7 @@ const utils = require('./utils')
 
 
 let router = express.Router()
-router.get("/", (req,res)=>{
+router.get("/", async (req,res)=>{
     let wc = []
     let wv = []
     if (req.query.isbn){
@@ -48,7 +48,7 @@ router.get("/", (req,res)=>{
             (pg)=>req.db.prepare(`SELECT isbn, title, sale_price, cover_url, available, group_concat(Author.name, ', ') as authors, group_concat(Genres.name, ', ') as genres ${wcStr} ORDER BY isbn ${pg}`).all(wv),
             ()=>req.db.prepare(`SELECT count(*) as cnt ${wcStr}`).get(wv)?.cnt)
             
-        res.json(pgntr(req.query))
+        res.json(await pgntr(req.query))
     } catch (e) {
         utils.reqError(res, e, e.message)
     }

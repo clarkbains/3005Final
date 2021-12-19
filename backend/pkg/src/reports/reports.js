@@ -20,7 +20,7 @@ module.exports = {
         info:"Report to get x",
         generator:function (req,res, params) {
             console.log("Report called! Generating from", params)
-            res.json(params)
+            res.render("test.ejs", {params: params})
         }
     }
 }

@@ -3,13 +3,13 @@ const utils = require('./utils')
 
 
 let router = express.Router()
-router.get("/", (req,res)=>{
+router.get("/", async (req,res)=>{
     let nameList = (req.query?.name?.split(/,\s?/) ?? [""]).map(e=>`%${e}%`)
 
     let wc = `where ${nameList.map(e=>`(name like ?)`).join (" OR ")}`
     
     try {
-        let pgntr = utils.paginator(
+        let pgntr = await utils.paginator(
             (pg)=>req.db.prepare(`SELECT * from Authors ${wc} ORDER BY name ${pg}`).all(nameList),
             ()=>req.db.prepare(`SELECT count(*) as cnt from Authors ${wc}`).get(nameList)?.cnt)
             
