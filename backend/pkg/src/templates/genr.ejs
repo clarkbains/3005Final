@@ -1,0 +1,10 @@
+<div>
+    <table>
+        <% for(let key of Object.keys(params)) {%>
+            <tr>
+              <td><%= key%></td>
+              <td><%= params[key]%></td>
+            </tr>
+         <% } %>
+    </table>
+</div>

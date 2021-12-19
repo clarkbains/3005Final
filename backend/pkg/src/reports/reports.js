@@ -2,9 +2,9 @@ module.exports = {
     foobar: {
         parameters: [
             {
-                name:"cust_name",
-                type:"string", 
-                label:"cust name", default:""
+                name:"date",
+                type:"date", 
+                label:"Report Start Time", 
             },
             {
                 name:"purchase_time",
@@ -14,13 +14,17 @@ module.exports = {
             {
                 name:"book_num",
                 type:"number", 
-                label:"How many books?"
+                label:"How many books?",
+                default:"0"
             }
         ], 
-        info:"Report to get x",
+        info:"Sales Per Genre",
         generator:function (req,res, params) {
-            console.log("Report called! Generating from", params)
-            res.render("test.ejs", {params: params})
+            let data = req.db.prepare(`SELECT Genres.name, sum(price) as genre_sales from Genres 
+            natural join book_genres 
+            natural join Order_Items 
+            natural join Orders where Orders.date > ? group by genres.name ORDER BY genre_sales DESC`).all(params.date)
+            res.render("genreSales.ejs", {data: data})
         }
     }
 }
