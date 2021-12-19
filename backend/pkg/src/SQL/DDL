@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS
         `phone` TEXT NOT NULL,
         `branch_transit` TEXT NOT NULL,
         `financial_institution` TEXT,
-        `` INTEGER NOT NULL, 
+        `account_number` INTEGER NOT NULL, 
         `addressid` INTEGER NOT NULL, 
         CONSTRAINT `address_id_fk` FOREIGN KEY (`addressid`) REFERENCES Address(`addressid`));
 
