@@ -24,17 +24,26 @@ INSERT INTO Authors (name) VALUES ('Billie')
 
 INSERT INTO Authors (name) VALUES ('Brent')
 
-INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11101', 'Title1', 881, 17.05, 13, 'http://images/11101', 1)
+INSERT INTO Address (country, city, province, postal, street_number, street) VALUES ('Canada', 'ott', 'ON', 'k2c0j7', '2873', 'Birt st.')
 
-INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11102', 'Title2', 801, 13.05, 1, 'http://images/11105', 0)
+INSERT INTO Address (country, city, province, postal, street_number, street) VALUES ('USA', 'ott', 'FL', '01923', '3242', 'Penguin st.')
 
-INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11103', 'Title3', 801, 14.45, 1, 'http://images/11105', 1)
+INSERT INTO Publishers (name, email, phone, branch_transit, financial_institution,account_number, addressid) VALUES ('Penguin', 'p@email', '7384972', '01', '02', '03' , 02)
 
-INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11109', 'The great canadian cookbook', 40, 30.05, 1, 'http://images/11102', 1)
+INSERT INTO Publishers (name, email, phone, branch_transit, financial_institution,account_number, addressid) VALUES ('Bird', 'b@email', '12342', '18', '24', '03' , 01)
 
-INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('11112', 'The great american cookbook', 90, 20.05, 1, 'http://images/food', 1)
 
-INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, cover_url, available) VALUES ('111145', 'NatGeo natural edition', 23, 6, 1, 'http://images/nature', 1)
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, royalty, cover_url, available, publisherid) VALUES ('11101', 'Title1', 881, 17.05, 1, 13, 'http://images/11101', 1, 2)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, royalty, cover_url, available, publisherid) VALUES ('11102', 'Title2', 801, 13.05, 2, 1, 'http://images/11105', 0, 2)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, royalty, cover_url, available, publisherid) VALUES ('11103', 'Title3', 801, 14.45, 3, 1, 'http://images/11105', 1, 2)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, royalty, cover_url, available, publisherid) VALUES ('11109', 'The great canadian cookbook', 40, 30.05, 4, 1, 'http://images/11102', 1, 2)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, royalty, cover_url, available, publisherid) VALUES ('11112', 'The great american cookbook', 90, 20.05, 5, 1, 'http://images/food', 1, 1)
+
+INSERT INTO Books (isbn, title, pages, sale_price, purchase_price, royalty, cover_url, available, publisherid) VALUES ('111145', 'NatGeo natural edition', 23, 6, 6, 1, 'http://images/nature', 1, 2)
 
 INSERT INTO book_genres (genreid, isbn) VALUES ('3', '11112')
 
@@ -57,4 +66,3 @@ INSERT INTO book_authors (authorid, isbn) VALUES ('2', '111145')
 INSERT INTO book_authors (authorid, isbn) VALUES ('4', '111145')
 
 INSERT INTO book_authors (authorid, isbn) VALUES ('5', '111145')
-

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS
         `ccv` INTEGER   NOT NULL,
         `exp_month` INTEGER NOT NULL,
         `exp_year` INTEGER  NOT NULL,
-        CONSTRAINT `user_id_fk` FOREIGN KEY (`userid`) REFERENCES User(`userid`) ON DELETE CASCADE,
+        CONSTRAINT `user_id_fk` FOREIGN KEY (`userid`) REFERENCES Users(`userid`) ON DELETE CASCADE,
         PRIMARY KEY(`userid`, `card_number`, `ccv`, `exp_month`, `exp_year`));
 
 
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS
         `userid` INTEGER NOT NULL,
         `addressid` INTEGER NOT NULL,
         CONSTRAINT `user_id_fk` FOREIGN KEY (`userid`) REFERENCES Users(`userid`),
-        CONSTRAINT `address_id_fk` FOREIGN KEY (`addressid`) REFERENCES Address(`addressid`),
+        CONSTRAINT `address_id_fk` FOREIGN KEY (`addressid`) REFERENCES Address(`addressid`) ON DELETE CASCADE,
         PRIMARY KEY (`userid`, `addressid`));
 
 CREATE TABLE IF NOT EXISTS
@@ -54,7 +54,11 @@ CREATE TABLE IF NOT EXISTS
         `purchase_price` REAL NOT NULL,
         `cover_url` TEXT,
         `available` INTEGER NOT NULL DEFAULT (0),
-        `quantity` INTEGER NOT NULL DEFAULT (0));
+        `quantity` INTEGER NOT NULL DEFAULT (0),
+        `publisherid` INTEGER NOT NULL,
+        `royalty` REAL NOT NULL,
+        CONSTRAINT `publisherid` FOREIGN KEY (`publisherid`) REFERENCES Publishers(`publisherid`)
+        );
 
 CREATE TABLE IF NOT EXISTS
     Orders (
@@ -79,13 +83,14 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     Publishers (
         `publisherid` INTEGER PRIMARY KEY NOT NULL UNIQUE,
-        `title` TEXT  NOT NULL,
-        `pages` INTEGER NOT NULL,
-        `sale_price` REAL NOT NULL,
-        `purchase_price` REAL NOT NULL,
-        `cover_url` TEXT,
-        `available` INTEGER NOT NULL DEFAULT (1),
-        `quantity` INTEGER NOT NULL DEFAULT (0));
+        `name` TEXT  NOT NULL,
+        `email` TEXT NOT NULL,
+        `phone` TEXT NOT NULL,
+        `branch_transit` TEXT NOT NULL,
+        `financial_institution` TEXT,
+        `` INTEGER NOT NULL, 
+        `addressid` INTEGER NOT NULL, 
+        CONSTRAINT `address_id_fk` FOREIGN KEY (`addressid`) REFERENCES Address(`addressid`));
 
 CREATE TABLE IF NOT EXISTS
     Genres (
@@ -113,13 +118,6 @@ CREATE TABLE IF NOT EXISTS
         CONSTRAINT `genre_id_fk` FOREIGN KEY (`genreid`) REFERENCES Genres(`genreid`),
         PRIMARY KEY (`genreid`, `isbn`));
         
-CREATE TABLE IF NOT EXISTS
-    book_publisher (
-        `publisherid` INTEGER NOT NULL,
-        `isbn` INTEGER PRIMARY KEY NOT NULL,
-        `royalty` REAL NOT NULL,
-        CONSTRAINT `isbn_fk` FOREIGN KEY (`isbn`) REFERENCES Books(`isbn`),
-        CONSTRAINT `publisherid_fk` FOREIGN KEY (`publisherid`) REFERENCES Publishers(`publisherid`));
 
 CREATE TABLE IF NOT EXISTS
     Publisher_Orders (

@@ -20,6 +20,10 @@ bounds = function(num, lower, upper){
 //Better way to do this?
 paginator = function (getData, getCountCB) {
     return (req)=>{
+     
+      if (req?.nopages ?? false){
+        return getData("")
+      }
       let count = getCountCB()
       let size = Math.trunc(bounds(Number(req.size),1,100))
       let requestedPage = Math.trunc(Number((req?.page ?? 1) - 1))
@@ -52,7 +56,7 @@ systemError = function (res, e, msg, detail){
         msg: msg
     }
     if (detail) eo.detail = detail
-    res.status(500).json(eo)
+    res.status(e.statuscode ?? 500).json(eo)
 }
 
 reqError = function (res, e, msg, detail){
@@ -61,7 +65,7 @@ reqError = function (res, e, msg, detail){
         msg: msg
     }
     if (detail) eo.detail = detail
-    res.status(400).json(eo)
+    res.status(e.statuscode ?? 400).json(eo)
     console.warn(e)
 }
 filterFromObj = function (obj, keys) {
@@ -84,6 +88,14 @@ filterObj = function (obj, keys) {
     return n
 }
 
+checkObject = function (o){
+    if ([undefined, null].includes(o)){
+        let e = new Error("Failed to find the specified resource")
+        e.statuscode = 400
+        throw e
+    }
+}
+
 admin = function (req,res,next){
     if (req.session.user.admin){
         next()
@@ -100,5 +112,5 @@ user = function (req,res,next){
 }
 
 module.exports = {
-    superset, getFromBody, systemError, reqError, filterObj, admin, user,paginator, filterFromObj
+    superset, getFromBody, systemError, reqError, filterObj, admin, user,paginator, filterFromObj, checkObject
 }
