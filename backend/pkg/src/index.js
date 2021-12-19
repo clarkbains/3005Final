@@ -6,7 +6,9 @@ const path = require('path')
 let app = express()
 let API = express.Router()
 API.use(express.json())
-API.options("/**", (req,res)=>{res.header("Access-Control-Allow-Origin", "*"); res.end()})
+API.options("/**", (req,res)=>{
+    res.header("Access-Control-Allow-Origin", "*");res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); 
+    res.end()})
 API.use(middleWare.addDb)
 API.use(session({secret:"foobar"}))
 app.set('views', path.join(__dirname, "templates"));
