@@ -67,9 +67,9 @@ INSERT INTO book_authors (authorid, isbn) VALUES ('4', '111145')
 
 INSERT INTO orders (tracking_number, carrier, userid) VALUES ('ttt', 'canada post', 2)
 
-INSERT INTO Order_Items (isbn, orderid) VALUES (111145, 1)
+INSERT INTO Order_Items (isbn, orderid, price) VALUES (111145, 1, 1*23)
 
-INSERT INTO Order_Items (isbn, orderid, quantity) VALUES (11112, 1, 8)
+INSERT INTO Order_Items (isbn, orderid, quantity, price) VALUES (11112, 1, 8, 20.05*8)
 
 INSERT INTO book_authors (authorid, isbn) VALUES ('5', '111145')
 

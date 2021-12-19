@@ -57,7 +57,7 @@ router.patch ("/:id/address/:aid", utils.superset(["id"], "params"), utils.super
     }
 })
 
-router.delete ("/:id/address/:aid", utils.user, utils.superset(["id"], "params"), utils.superset(["aid"], "params"), (req,res)=>{
+router.delete ("/:id?/address/:aid", utils.user, utils.superset(["aid"], "params"), (req,res)=>{
     try {
         req.db.prepare("DELETE FROM Address where addressid = ?").run(...res.locals.checked)
         res.json({})

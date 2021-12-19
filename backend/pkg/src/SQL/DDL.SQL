@@ -59,7 +59,6 @@ CREATE TABLE IF NOT EXISTS
         `tracking_number` TEXT NOT NULL,
         `carrier` TEXT NOT NULL,
         `date` INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-        `price` REAL NOT NULL DEFAULT (0),
         `royalties` REAL NOT NULL DEFAULT (0),
         CONSTRAINT `user_id_fk` FOREIGN KEY (`userid`) REFERENCES Users(`userid`));
 
@@ -68,6 +67,7 @@ CREATE TABLE IF NOT EXISTS
         `orderid` INTEGER NOT NULL,
         `isbn` INTEGER NOT NULL,
         `quantity` INTEGER NOT NULL DEFAULT (1),
+        `price` REAL NOT NULL,
         CONSTRAINT `isbn_fk` FOREIGN KEY (`isbn`) REFERENCES Books(`isbn`),
         CONSTRAINT `order_id_fk` FOREIGN KEY (`orderid`) REFERENCES Orders(`orderid`),
         PRIMARY KEY (`orderid`, `isbn`));
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS
     book_authors (
         `authorid` INTEGER NOT NULL,
         `isbn` INTEGER NOT NULL,
-        CONSTRAINT `isbn_fk` FOREIGN KEY (`isbn`) REFERENCES Books(`isbn`),
+        CONSTRAINT `isbn_fk` FOREIGN KEY (`isbn`) REFERENCES Books(`isbn`) ON DELETE CASCADE,
         CONSTRAINT `author_id_fk` FOREIGN KEY (`authorid`) REFERENCES Authors(`authorid`),
         PRIMARY KEY (`authorid`, `isbn`));
 
@@ -107,8 +107,8 @@ CREATE TABLE IF NOT EXISTS
     book_genres (
         `genreid` INTEGER NOT NULL,
         `isbn` INTEGER NOT NULL,
-        CONSTRAINT `isbn_fk` FOREIGN KEY (`isbn`) REFERENCES Books(`isbn`),
-        CONSTRAINT `genre_id_fk` FOREIGN KEY (`genreid`) REFERENCES Genres(`genreid`),
+        CONSTRAINT `isbn_fk` FOREIGN KEY (`isbn`) REFERENCES Books(`isbn`) ON DELETE CASCADE,
+        CONSTRAINT `genre_id_fk` FOREIGN KEY (`genreid`) REFERENCES Genres(`genreid`) ON DELETE CASCADE,
         PRIMARY KEY (`genreid`, `isbn`));
         
 

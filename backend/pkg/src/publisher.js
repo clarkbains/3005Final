@@ -18,6 +18,17 @@ router.get("/", async (req,res)=>{
         utils.reqError(res, e, e.message)
     }
 })
+
+router.post ("/address", utils.admin, utils.superset(["country", "city", "province", "postal", "street_number", "street"]), (req,res)=>{
+    try {
+        req.db.prepare("INSERT INTO Address (country, city, province, postal, street_number, street) VALUES (?, ?, ?, ?, ?, ?)").run(res.locals.checked)
+
+        res.json(req.body)
+        
+    } catch (e) {
+        utils.reqError(res, e, e.message)
+    }
+})
 router.post("/", utils.admin, utils.superset(["name", "email", "phone", "branch_transit", "financial_institution", "account_number", "addressid"]), (req,res)=>{
     
     try {

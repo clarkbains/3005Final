@@ -4,8 +4,7 @@ CREATE TRIGGER IF NOT EXISTS updateOrder
     --SQLite doesn't support vars, so duplicated selects
     UPDATE Orders 
         SET
-         royalties=royalties+(NEW.quantity * (SELECT sale_price*royalty from Books where Books.isbn = NEW.isbn)), 
-         price=price+(NEW.quantity * (SELECT sale_price from Books where Books.isbn = NEW.isbn)) 
+         royalties=royalties+(NEW.quantity * (SELECT sale_price*royalty from Books where Books.isbn = NEW.isbn)) 
         where orderid = NEW.orderid;
     UPDATE Books 
         SET

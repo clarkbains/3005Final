@@ -17,7 +17,7 @@ router.post("/", utils.user, utils.superset(["billing","addressid", "items"]),as
   
 
     try {
-        let address = req.db.prepare("SELECT country, city, province, postal, street_number, street, from Address where addressid = ?").get(req.body.addressid)
+        let address = req.db.prepare("SELECT country, city, province, postal, street_number, street from Address where addressid = ?").get(req.body.addressid)
 
         let re = await fetch('http://localhost:8978/tracking', {
             method: "POST",
@@ -33,10 +33,10 @@ router.post("/", utils.user, utils.superset(["billing","addressid", "items"]),as
 
         
         for (let item of req.body?.items){
-            req.db.prepare("INSERT INTO Order_Items (orderid, isbn, quantity) VALUES (?, ?, ?) ").run(ifo.lastInsertRowid, item.isbn, item.quantity ?? 1)
+            req.db.prepare("INSERT INTO Order_Items (orderid, isbn, quantity, price) SELECT ?, ?, ?, (?*sale_price) from Books where isbn = ? ").run(ifo.lastInsertRowid, item.isbn, item.quantity ?? 1, item.quantity ?? 1, item.isbn)
         }
         
-        let total = req.db.prepare("SELECT price from Orders where orderid = ?").get(ifo.lastInsertRowid).price
+        let total = req.db.prepare("SELECT SUM(price) as price from Orders natural join order_items where orderid = ?").get(ifo.lastInsertRowid).price
         res.json({
             total,
             orderid:ifo.lastInsertRowid,
@@ -54,11 +54,12 @@ router.get("/:id", utils.user, meMiddleware, async (req,res)=>{
         let wv = [req.params.id]
 
         let pgntr = utils.paginator(
-            (pg)=>Promise.all(req.db.prepare(`SELECT * from Orders ${wc} ORDER BY date DESC ${pg}`).all(wv).map((e) => getOrder(e))),
+            (pg)=>Promise.all(req.db.prepare(`SELECT * from Orders ${wc} ORDER BY date DESC ${pg}`).all(wv).map((e) => getOrder(req.db, e))),
             ()=>req.db.prepare(`SELECT count(*) as cnt from Orders ${wc}`).get(wv)?.cnt)
-            
-        res.json(await pgntr(req.query))
+
+            res.json(await pgntr(req.query))
     } catch (e) {
+        console.log(e)
         utils.reqError(res, e, e.message)
     }
 })
@@ -66,14 +67,15 @@ router.get("/:id", utils.user, meMiddleware, async (req,res)=>{
 
 ///api/orders/userid/orderid
 router.get("/:id/:oid", utils.user, meMiddleware, async (req,res)=>{
-   res.json(getOrder({userid:req.params.id, orderid:req.params.oid}))
+   res.json(await getOrder(req.db, {userid:req.params.id, orderid:req.params.oid}))
 })
 
 
-async function getOrder(order){
+async function getOrder(db, order){
+
     try{ 
         if (!order.price || !order.date || !order.tracking_number || !order.carrier){
-            order = req.db.prepare("SELECT carrier, tracking_number,price,date from Orders where orderid = ? and userid = ?").get(order.orderid, order.userid)
+            order = db.prepare("SELECT orderid, carrier, tracking_number,date, SUM(price) as price from Orders natural join order_items where orderid = ? and userid = ? group by orderid, userid, tracking_number, date, carrier").get(order.orderid, order.userid)
         }
         let re = await fetch('http://localhost:8978/tracking?' + 
         new URLSearchParams({
@@ -82,7 +84,6 @@ async function getOrder(order){
         }))
         let j = await re.json()
         utils.checkObject(j)
-
         return {
             tracking: j,
             price: order.price, 
@@ -90,6 +91,7 @@ async function getOrder(order){
             orderid: order.orderid
         }
     } catch (e) {
+        console.log(e)
         return {
             date: order.date ?? "Unavailabe",
             orderid: order.orderid ?? "Unavailable"
