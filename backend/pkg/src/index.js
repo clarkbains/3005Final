@@ -14,6 +14,7 @@ API.use("/genres", require('./genres'))
 API.use("/authors", require('./authors'))
 API.use("/books", require('./books'))
 API.use("/publishers", require('./publisher'))
+API.use("/reports", require('./reports'))
 
 app.use("/api", API)
 

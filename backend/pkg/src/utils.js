@@ -78,6 +78,9 @@ filterFromObj = function (obj, keys) {
     return n
 }
 
+notFound = new Error("Failed to find the specified resource")
+notFound.statuscode = 400
+
 filterObj = function (obj, keys) {
     let n = {}
     for (let k of keys){
@@ -90,9 +93,7 @@ filterObj = function (obj, keys) {
 
 checkObject = function (o){
     if ([undefined, null].includes(o)){
-        let e = new Error("Failed to find the specified resource")
-        e.statuscode = 400
-        throw e
+        throw notFound
     }
 }
 
@@ -112,5 +113,5 @@ user = function (req,res,next){
 }
 
 module.exports = {
-    superset, getFromBody, systemError, reqError, filterObj, admin, user,paginator, filterFromObj, checkObject
+    superset, getFromBody, systemError, reqError, filterObj, admin, user,paginator, filterFromObj, checkObject, notFound
 }
