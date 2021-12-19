@@ -105,6 +105,7 @@ admin = function (req,res,next){
     }
 }
 user = function (req,res,next){
+    console.log(req.session)
     if (req.session?.user?.userid){
         next()
     } else {
