@@ -278,6 +278,7 @@ const Admin = () => {
                 <Book
                   title={book.title}
                   sale_price={book.sale_price}
+                  purchase_price={book.purchase_price}
                   cover_url={book.cover_url}
                   genre={book.genre}
                   isbn={book.isbn}
@@ -285,6 +286,7 @@ const Admin = () => {
                   quantity={book.quantity}
                   actionText="Remove Book"
                   action={removeBook}
+                  admin={true}
                 />
                 <Divider />
               </>

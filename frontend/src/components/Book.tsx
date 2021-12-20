@@ -3,6 +3,7 @@ import { FC } from "react";
 import { IBook } from "./Users";
 
 interface BookActions {
+  admin: boolean;
   actionText: string;
   action: (
     isbn: string,
@@ -19,6 +20,8 @@ const Book: FC<IBook & BookActions> = ({
   genre,
   sale_price,
   actionText,
+  purchase_price,
+  admin,
   action,
 }) => {
   return (
@@ -40,10 +43,15 @@ const Book: FC<IBook & BookActions> = ({
       <Text width="20%" textAlign={"center"}>
         {genre && genre}
       </Text>
-      <Text width="10%" textAlign={"center"}>
-        ${sale_price}
-      </Text>
-
+      {admin ? (
+        <Text width="10%" textAlign={"center"}>
+          ${purchase_price}
+        </Text>
+      ) : (
+        <Text width="10%" textAlign={"center"}>
+          ${sale_price}
+        </Text>
+      )}
       <Text width="10%" textAlign={"center"}>
         {quantity}
       </Text>

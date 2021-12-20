@@ -20,29 +20,6 @@ import {
 import Book from "./Book";
 import API_ADDR from "../Config";
 
-const initBooks = [
-  {
-    isbn: "100",
-    title: "Test Book 1",
-    sale_price: 100,
-    cover_url: "",
-    quantity: 10,
-    genre: "YA",
-    author: "Emma Chadwick",
-  },
-];
-
-const initAddress = [
-  {
-    city: "Ottawa",
-    country: "Canada",
-    postal: "K2L2N9",
-    status: "Lost",
-    street: "McIntosh Way",
-    street_number: "33",
-    addressid: "12",
-  },
-];
 export type IBook = {
   isbn: string;
   title: string;
@@ -51,6 +28,7 @@ export type IBook = {
   quantity: number;
   genre: string;
   author: string;
+  purchase_price: number;
 };
 
 type ICartItem = {
@@ -90,7 +68,7 @@ type IShippingAddress = {
 };
 
 const User = () => {
-  const [books, setBooks] = useState<IBook[]>(initBooks);
+  const [books, setBooks] = useState<IBook[]>([]);
   const [genres, setGenres] = useState<IGenre[]>([]);
 
   const [filterByTitle, setFilterByTitle] = useState("");
@@ -102,8 +80,9 @@ const User = () => {
 
   const [cart, setCart] = useState<ICartItem[]>([]);
   const [purchaseTotal, setPurchaseTotal] = useState(0);
-  const [shippingAddresses, setShippingAddresses] =
-    useState<IShippingAddress[]>(initAddress);
+  const [shippingAddresses, setShippingAddresses] = useState<
+    IShippingAddress[]
+  >([]);
 
   const [address, setAddress] = useState("");
   const [streetNumber, setStreetNumber] = useState("");
@@ -470,6 +449,8 @@ const User = () => {
                   quantity={book.quantity}
                   actionText="Add to Cart"
                   action={addToCart}
+                  purchase_price={book.purchase_price}
+                  admin={false}
                 />
                 <Divider />
               </>
