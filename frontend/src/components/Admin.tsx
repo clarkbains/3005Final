@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import Book from "./Book";
 import { IBook } from "./Users";
+import API_ADDR from "../Config";
 
 type IReport = {
   parameters: [
@@ -43,7 +44,7 @@ const Admin = () => {
   const [royalty, setRoyalty] = useState("");
 
   const getBooks = async () => {
-    const res = await fetch(`http://localhost:9756/api/books?nopages=true`, {
+    const res = await fetch(`${API_ADDR}/api/books?nopages=true`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -56,7 +57,7 @@ const Admin = () => {
   };
 
   const getReports = async () => {
-    const res = await fetch("http://localhost:9756/api/reports", {
+    const res = await fetch(`${API_ADDR}/api/reports`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -70,7 +71,7 @@ const Admin = () => {
   };
 
   const removeBook = async (isbn: string) => {
-    const res = await fetch(`http://localhost:9756/api/books/${isbn}`, {
+    const res = await fetch(`${API_ADDR}/api/books/${isbn}`, {
       method: "PATCH",
       body: JSON.stringify({
         available: 0,
@@ -86,7 +87,7 @@ const Admin = () => {
   };
 
   const addBook = async () => {
-    const res = await fetch("http://localhost:9756/api/books", {
+    const res = await fetch(`${API_ADDR}/api/books`, {
       method: "POST",
       body: JSON.stringify({
         title,
@@ -109,7 +110,7 @@ const Admin = () => {
 
   const generateReport = async (reportTitle: string) => {
     const res = await fetch(
-      `http://localhost:9756/api/reports/${reportTitle}`,
+      `${API_ADDR}/api/reports/${reportTitle}`,
       {
         method: "POST",
         body: JSON.stringify({

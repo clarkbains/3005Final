@@ -44,11 +44,10 @@ router.get("/", async (req,res)=>{
     
     /*let nameList = (req.query?.name?.split(/,\s?/) ?? [""]).map(e=>`%${e}%`)
 */  
-    let wcStr = `from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.genreid = book_genres.genreid where ${wc.join(" AND ")}  group by isbn, title, sale_price, cover_url, available, quantity`
-    
+    let wcStr = `from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.genreid = book_genres.genreid where ${wc.join(" AND ")}  group by isbn `
     try {
         let pgntr = utils.paginator(
-            (pg)=>req.db.prepare(`SELECT isbn, title, quantity, sale_price, cover_url, available, group_concat(Authors.name, ', ') as authors, group_concat(Genres.name, ', ') as genres ${wcStr} ORDER BY isbn ${pg}`).all(wv),
+            (pg)=>req.db.prepare(`SELECT isbn, title, quantity, sale_price, cover_url, available, group_concat(DISTINCT Authors.name) as authors, group_concat(DISTINCT Genres.name) as genres ${wcStr} ORDER BY isbn ${pg}`).all(wv),
             ()=>req.db.prepare(`SELECT count(*) as cnt ${wcStr}`).get(wv)?.cnt)
             
         res.json(await pgntr(req.query))
@@ -61,7 +60,7 @@ router.post("/", utils.admin, utils.superset(["title", "isbn", "sale_price", "pu
     let db_keys = []
     let db_vals = []
     //Add in optional values
-    for (let key of ["cover_url", "available", "quantity"]){
+    for (let key of ["cover_url", "available"]){
         if (req.body[key]){
             db_keys.push(key)
             db_vals.push(req.body[key])
@@ -69,6 +68,11 @@ router.post("/", utils.admin, utils.superset(["title", "isbn", "sale_price", "pu
     }
     try {
         req.db.prepare(`INSERT INTO Books (title, isbn, sale_price, purchase_price, pages, publisherid, royalty ${db_keys.length>0?`, ${db_keys.join(", ")}`:""}) VALUES (?, ?, ?, ?, ?, ?, ? ${db_vals.length>0?`, ${db_vals.map(e=>`?`).join(", ")}`:""})`).run([...res.locals.checked, ...db_vals])
+
+        if(req.body.quantity){
+            req.db.prepare("INSERT INTO Publisher_Orders (publisherid, isbn, quantity, received, price) VALUES (?, ?, ?, ?, ?*?)").run(req.body.publisherid, req.body.isbn, req.body.quantity, 0, req.body.quantity, req.body.purchase_price)
+        }
+
         res.json(req.body)
     } catch (e) {
         utils.reqError(res, e, e.message)
@@ -100,6 +104,7 @@ router.post ("/:id/genres", utils.admin, utils.superset(["genres"]), (req,res)=>
         for (let genre of res.locals.checked[0]){
             prepared.run(req.params.id, genre)
         }
+        res.json(req.body)
     } catch (e) {
         utils.reqError(res, e, e.message)
     }
@@ -134,6 +139,7 @@ router.post ("/:id/authors", utils.admin, utils.superset(["authors"]), (req,res)
         for (let author of res.locals.checked[0]){
             prepared.run(req.params.id, author)
         }
+        res.json(req.body)
     } catch (e) {
         utils.reqError(res, e, e.message)
     }

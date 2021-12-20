@@ -1,7 +1,9 @@
 FROM mhart/alpine-node
 WORKDIR /app
+RUN apk add dumb-init yarn
+RUN npm install -g serve
 COPY package.json .
-RUN npm install
+RUN yarn install
 COPY . ./
-CMD npm run start
+CMD ["./init.sh"]
 EXPOSE 3000/tcp

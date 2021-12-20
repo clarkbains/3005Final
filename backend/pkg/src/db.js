@@ -5,15 +5,19 @@ const WIPE_AT_START = false
 const SQL_FOLDER = path.join(__dirname, "SQL")
 
 function init() {
+    let dbExists = fs.readdirSync("/data").includes("mydb")
     try {
-        if (WIPE_AT_START) fs.unlinkSync("/data/mydb")
+        if (WIPE_AT_START) {
+            fs.unlinkSync("/data/mydb")
+            fs.unlinkSync("/data/tracking")
+        }
     } catch (e){}
     
     
     let r = new Pool("/data/mydb")
     
 
-    if (WIPE_AT_START){
+    if (WIPE_AT_START || !dbExists){
         const FILES = ["DDL.SQL", "TRIGGERS.SQL", "SEED.SQL"]
         r.acquire().then(db => {
             for (let f of FILES){

@@ -1,6 +1,6 @@
 import { Box, Heading, Input, Button, Link } from "@chakra-ui/react";
 import { useState } from "react";
-
+import API_ADDR from "../Config";
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -8,7 +8,7 @@ const SignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const signup = async () => {
-    const res = await fetch("http://localhost:9756/api/user", {
+    const res = await fetch(`${API_ADDR}/api/user`, {
       method: "POST",
       body: JSON.stringify({
         username,
