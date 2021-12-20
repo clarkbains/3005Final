@@ -232,14 +232,14 @@ const Admin = () => {
                 placeholder="Quantity"
                 onChange={(e) => setQuantity(e.target.value)}
               />
+            </Box>
+            <Box width="30%">
               <Input
                 marginBottom={4}
                 value={salePrice}
                 placeholder="Sale Price"
                 onChange={(e) => setSalePrice(e.target.value)}
               />
-            </Box>
-            <Box width="30%">
               <Input
                 marginBottom={4}
                 value={purchasePrice}
@@ -269,21 +269,15 @@ const Admin = () => {
               </Select>
               <Input
                 marginBottom={4}
-                value={publisherId}
-                placeholder="Publisher ID"
-                onChange={(e) => setPublisherId(e.target.value)}
-              />
-              <Input
-                marginBottom={4}
                 value={royalty}
                 placeholder="Royalty"
                 onChange={(e) => setRoyalty(e.target.value)}
               />
-              <Button margin={6} width="40%" onClick={(_) => addBook()}>
-                Add Book
-              </Button>
             </Box>
           </Box>
+          <Button margin={6} width="20%" onClick={(_) => addBook()}>
+            Add Book
+          </Button>
         </TabPanel>
         <TabPanel>
           <Box
