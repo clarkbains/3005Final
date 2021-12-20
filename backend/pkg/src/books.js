@@ -47,7 +47,7 @@ router.get("/", async (req,res)=>{
     let wcStr = `from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.genreid = book_genres.genreid where ${wc.join(" AND ")}  group by isbn `
     try {
         let pgntr = utils.paginator(
-            (pg)=>req.db.prepare(`SELECT isbn, title, quantity, sale_price, cover_url, available, group_concat(DISTINCT Authors.name) as author, group_concat(DISTINCT Genres.name) as genres ${wcStr} ORDER BY isbn ${pg}`).all(wv),
+            (pg)=>req.db.prepare(`SELECT isbn, title, quantity, sale_price, purchase_price, cover_url, available, group_concat(DISTINCT Authors.name) as author, group_concat(DISTINCT Genres.name) as genre ${wcStr} ORDER BY isbn ${pg}`).all(wv),
             ()=>req.db.prepare(`SELECT count(*) as cnt ${wcStr}`).get(wv)?.cnt)
             
         res.json(await pgntr(req.query))
