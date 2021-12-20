@@ -81,7 +81,7 @@ const User = () => {
 
   const getBooks = async () => {
     const res = await fetch(
-      `http://localhost:9756/api/books?isbn=${filterByISBN}&title=${filterByTitle}&genre=${filterByGenre}&author=${filterByAuthor}`,
+      `http://localhost:9756/api/books?isbn=${filterByISBN}&title=${filterByTitle}&genre=${filterByGenre}&author=${filterByAuthor}&nopages=true`,
       {
         method: "GET",
         credentials: "include",
@@ -90,7 +90,7 @@ const User = () => {
     );
 
     const books = await res.json();
-    setBooks(books.items);
+    setBooks(books);
   };
 
   const getGenres = async () => {
