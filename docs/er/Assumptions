@@ -1,13 +1,44 @@
-No cart. Done in local storage
+Billing info cannot be deleted/edited, also it must belong to a user.
 
-Deleted books are only ever marked as unavailable. This allows valid reports to be generated
+Users must have unique usernames, as they login with this
 
-Orders aren't filled immediately. To be more realistic, a publisher order being present means the "email" was sent out, while recieved means it arrived at the store. This will simply be set to true for all false tupples periodically as there is no real store to do this with.
-every book has a unique isbn.
+A user can have multiple addresses
 
-publisher orders can only be for one book at once.
-
+A user can have multiple orders
 Order can have 1 quantity of a specific item. So maybe 4xbook1 and 3xbook2, but not 2xbook1 and 3xbook1 and 3xbook2.
 
-publisher can only have one bank account, and it must be unique per publisher
 
+Books always have an isbn, that is an integer
+Deleted books are only ever marked as unavailable. This allows valid reports to be generated
+Books can only have one publisher
+Books can have 0 to multiple authors (anonymously published) and genres
+Book prices ca
+Genres can be deleted, and should update books with that genre (for example, if a kind of genre doesn't make sense anymore, ie apocolyptic isn't a genre anymore if you live in an apocolyptic world). Meanwhile authors can only be deleted if no books list them as the authors.
+
+Authors and Genres do not need to have a book that includes them. (application has search functionality for both, so imagine importing a large list of each, to make searching easier when adding books.)
+
+publisher orders can only be for one book at once.
+publisher can only have one bank account
+Publisher orders are not fufilled automatically (This is more realistic)
+
+Publisher orders may not all be recieved at once (but always are in this system)
+In addition to royalty, there is a purchase price that must be paid to the publisher every time a new order is made.
+
+The min inventory for a book is a static constant throughout the system, not made to be easily changed through the application itself
+
+Tracking info is not stored within the database. In the real world this would be delagated to the third part carrier
+
+Address could be shared between Publisher and Users, so if publishers are ordering books, they can be shipped to the current address of a user.
+
+No server side cart. Done in browser local storage
+
+
+
+
+Implementation:
+The API is an express based HTTP API that communicates with a sqlite database using a pool of conenctions for better concurency. It includes a preseeded database, to help get up and running quicker.
+
+Flaws:
+This project is not witthout its flaws. In retrospect, it would have been a cleaner design to not reuse address for both publishers and users, as it creates weird relations.
+
+The API portion is not hardered against attacks, all it does basic checking to ensure all attributes are included, and checks that users have a session, but it has no authorization. For example, a user can do any operation for any user (including fetching billing info). In addition, passwords are stored in plaintext in the database, which is terrible for security.

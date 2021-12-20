@@ -9,4 +9,6 @@ This configuration will expose a working frontend server on [localhost:9757](htt
 ## Deployed Version
 A deployed version of the frontend is available at [3005fe.cbains.ca](https://3005fe.cbains.ca), and a backend at [3005be.cbains.ca](https://3005be.cbains.ca). The database here is inaccessible to the public.
 
+## Accounts
+If no database is found, the API will create a database and insert an admin user `root` with password `toor`. A regular user `foo` with password `test` is also created.
 

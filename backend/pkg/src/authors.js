@@ -27,7 +27,9 @@ router.get ("/:id", utils.user, utils.superset(["id"], "params"), (req,res)=>{
 
 router.post("/", utils.admin, utils.superset(["name"]),(req,res)=>{
     try {
-        req.db.prepare("INSERT INTO Authors (name) VALUES (?)").run(res.locals.checked)
+        let ifo = req.db.prepare("INSERT INTO Authors (name) VALUES (?)").run(res.locals.checked)
+        req.body.authorid = ifo.lastInsertRowid
+        res.json(req.body)
     } catch (e) {
         utils.reqError(res, e, e.message)
     }
