@@ -1,0 +1,10 @@
+<div>
+    <table>
+        <% for(let salesItem of data) {%>
+            <tr>
+              <td><%= salesItem.name ?? "[Unknown]" %> </td>
+              <td><%= salesItem.amount%></td>
+            </tr>
+         <% } %>
+    </table>
+</div>

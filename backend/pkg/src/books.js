@@ -15,7 +15,9 @@ router.get("/", async (req,res)=>{
     } if (req.query.gtprice){
         wc.push(`price >= ?`)
         wv.push(req.query.gtprice)
-    }
+    } if (!req.query.unavailable){
+        wc.push("(Books.available != 0)")
+    } 
     if (req.query.title){
         let titleParts = req.query.title.split(/,\s?/g)
         titleParts.forEach(e=>{
@@ -26,7 +28,7 @@ router.get("/", async (req,res)=>{
         let genreParts = req.query.genre.split(/,\s?/g)
         let orc = []
         genreParts.forEach(e=>{
-            orc.push(`( genreid = ? )`)
+            orc.push(`( Genres.genreid = ? )`)
             wv.push(`${e}`)
         })
         wc.push(`(${orc.join(" OR ")})`)
@@ -39,13 +41,14 @@ router.get("/", async (req,res)=>{
         })
         wc.push(`(${orc.join(" OR ")})`)
     }
+    
     /*let nameList = (req.query?.name?.split(/,\s?/) ?? [""]).map(e=>`%${e}%`)
-*/
-    let wcStr = `from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.isbn = Books.isbn where ${wc.join(" AND ")} group by isbn, title, sale_price, cover_url, available `
+*/  
+    let wcStr = `from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.genreid = book_genres.genreid where ${wc.join(" AND ")}  group by isbn, title, sale_price, cover_url, available`
     
     try {
         let pgntr = utils.paginator(
-            (pg)=>req.db.prepare(`SELECT isbn, title, sale_price, cover_url, available, group_concat(Author.name, ', ') as authors, group_concat(Genres.name, ', ') as genres ${wcStr} ORDER BY isbn ${pg}`).all(wv),
+            (pg)=>req.db.prepare(`SELECT isbn, title, sale_price, cover_url, available, group_concat(Authors.name, ', ') as authors, group_concat(Genres.name, ', ') as genres ${wcStr} ORDER BY isbn ${pg}`).all(wv),
             ()=>req.db.prepare(`SELECT count(*) as cnt ${wcStr}`).get(wv)?.cnt)
             
         res.json(await pgntr(req.query))

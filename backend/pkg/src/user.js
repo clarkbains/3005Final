@@ -7,7 +7,6 @@ const meMiddleware = (req,res,next)=>{
     if (req.params.id == "me"){
         req.params.id = req.session.user.userid
     }
-    //console.log("me!")
     next()
 }
 
@@ -36,6 +35,8 @@ router.post ("/:id/address", utils.user, meMiddleware, utils.superset(["id"], "p
         console.log(req.params, ifo)
 
         req.db.prepare("INSERT INTO User_Address (userid, addressid) VALUES (?, ?)").run(req.params.id, ifo.lastInsertRowid)
+
+        req.body.addressid = ifo.lastInsertRowid
 
         res.json(req.body)
         
@@ -78,7 +79,7 @@ router.get ("/:id/address", utils.user, meMiddleware, utils.superset(["id"], "pa
 
 router.post ("/:id/billing", utils.user, meMiddleware, utils.superset(["card_number", "ccv", "exp_month", "exp_year"]), (req,res)=>{
     try {
-        let ifo = req.db.prepare("INSERT INTO Billing_info (card_number, ccv, exp_month, exp_year, userid) VALUES (?, ?, ?, ?)").run(...res.locals.checked, req.params.id)
+        let ifo = req.db.prepare("INSERT INTO Billing_info (card_number, ccv, exp_month, exp_year, userid) VALUES (?, ?, ?, ?, ?)").run(...res.locals.checked, req.params.id)
         res.json(req.body)
     } catch (e) {
         utils.reqError(res, e, e.message)
@@ -98,7 +99,6 @@ router.get ("/:id/billing", utils.user, meMiddleware, (req,res)=>{
 
 
 router.get("/:id", utils.user, meMiddleware, (req, res, next)=>{
-    console.log("foo")
     try {
         if (req.params.id != req.session.user.userid && !req.session.user.admin){
             throw new Error("Only administrators can get for another user.")

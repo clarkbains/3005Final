@@ -99,11 +99,11 @@ DELETE FROM Genres where genreid = ?
 --[BOOKS.JS]
 --paginated Search (where wc is an array of search params assembled from the request)
 --  data
-SELECT isbn, title, sale_price, cover_url, available, group_concat(Author.name, ', ') as authors, group_concat(Genres.name, ', ') as genresfrom Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.isbn = Books.isbn where ${wc.join(" AND ")} group by isbn, title, sale_price, cover_url, available  ORDER BY isbn ${pg}
+SELECT isbn, title, sale_price, cover_url, available, group_concat(Authors.name, ', ') as authors, group_concat(Genres.name, ', ') as genresfrom Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.isbn = Books.isbn where ${wc.join(" AND ")} group by isbn, title, sale_price, cover_url, available  ORDER BY isbn ${pg}
 --  count
 SELECT count(*) as cnt from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.isbn = Books.isbn where ${wc.join(" AND ")} group by isbn, title, sale_price, cover_url, available 
 
---add book (db_keys is a set of optional attributes like cover_url, adn db_vals is their value. Things are only in this set if present)
+--add book (db_keys is a set of optional attributes like cover_url, and db_vals is their value. Things are only in this set if present)
 INSERT INTO Books (title, isbn, sale_price, purchase_price, pages, publisherid, royalty ${db_keys?`, ${db_keys.join(", ")}`:""}) VALUES (?, ?, ?, ?, ? ${db_vals?`, ${db_vals.map(e=>`?`).join(", ")}`:""})
 
 --patch an existing book
@@ -153,3 +153,16 @@ INSERT INTO Authors (name) VALUES (?)
 
 --remove author
 DELETE FROM Authors where authorid = ?
+
+--[REPORTS.JS]
+--Get Sales/Genre
+SELECT Genres.name as name, sum(oi.price) as amount from books natural left join book_genres bg natural left join Genres  join Order_Items oi on oi.isbn = Books.isbn natural join Orders where Orders.date >= ? group by genreid ORDER BY amount DESC
+
+
+--Get Sales/Author
+SELECT Authors.name as name, sum(oi.price) as amount from books natural left join book_authors bg natural left join Authors join Order_Items oi on oi.isbn = Books.isbn natural join Orders where Orders.date >= ? group by authorid ORDER BY amount DESC
+
+--Get Expenses/Income
+SELECT 	(SELECT SUM(price) from Order_Items natural join Orders  where date >= ?) as sales, 
+            (SELECT SUM(royalties) from Orders where date >= ? ) as royalties,
+            (SELECT SUM(price) from Publisher_Orders  where order_date  >= ? ) as pub_orders
