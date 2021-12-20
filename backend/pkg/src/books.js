@@ -70,9 +70,6 @@ router.post("/", utils.admin, utils.superset(["title", "isbn", "sale_price", "pu
         req.db.prepare(`INSERT INTO Books (title, isbn, sale_price, purchase_price, pages, publisherid, royalty ${db_keys.length>0?`, ${db_keys.join(", ")}`:""}) VALUES (?, ?, ?, ?, ?, ?, ? ${db_vals.length>0?`, ${db_vals.map(e=>`?`).join(", ")}`:""})`).run([...res.locals.checked, ...db_vals])
 
         if(req.body.quantity){
-            if (req.body.quantity <= 10){
-                throw new Error("Must order >= 10")
-            }
             req.db.prepare("INSERT INTO Publisher_Orders (publisherid, isbn, quantity, received, price) VALUES (?, ?, ?, ?, ?*?)").run(req.body.publisherid, req.body.isbn, req.body.quantity, 0, req.body.quantity, req.body.purchase_price)
         }
 

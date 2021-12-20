@@ -14,7 +14,7 @@ CREATE TRIGGER IF NOT EXISTS updateOrder
 
 
 CREATE TRIGGER IF NOT EXISTS mfcOrders
-    after update on Books WHEN NEW.quantity < 10 AND NEW.available != 0
+    after update on Books WHEN NEW.quantity < 10 AND NEW.available != 0 AND NEW.quantity < OLD.quantity
     BEGIN
     INSERT INTO Publisher_Orders (publisherid, isbn, quantity, price) 
     SELECT
