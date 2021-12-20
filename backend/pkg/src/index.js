@@ -7,22 +7,11 @@ let app = express()
 let API = express.Router()
 API.use(express.json())
 
-
+//Insert a db from pool into req
 API.use(middleWare.addDb)
 
-//CORS wasn't behaving, replace req.session with data from
-API.use("/**", (req,res,next)=>{
-    let uid = req?.headers?.["auth"]
-    try {
-        req.session = {}
-        req.session.user = req.db.prepare("SELECT username, userid, admin FROM Users where userid = ?").get(uid)
-    } catch(e){
-    }
-
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cookies, Auth"); 
-    res.header("Access-Control-Allow-Credentials", "true")
-    next()
-})
+//Add CORS Headers
+API.use("/**", middleWare.cors)
 
 app.set('views', path.join(__dirname, "templates"));
 app.set('view-engine', 'ejs');

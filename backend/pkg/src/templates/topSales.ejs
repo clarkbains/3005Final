@@ -3,7 +3,7 @@
         <% for(let salesItem of data) {%>
             <tr>
               <td><%= salesItem.name ?? "[Unknown]" %> </td>
-              <td><%= salesItem.amount%></td>
+              <td><%= Number(salesItem.amount).toFixed(2) %></td>
             </tr>
          <% } %>
     </table>

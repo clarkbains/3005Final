@@ -2,19 +2,19 @@
     <table>
             <tr>
               <td>Sales</td>
-              <td><%= data.sales%></td>
+              <td>$<%= Number(data.sales).toFixed(2)%></td>
             </tr>
             <tr>
               <td>Royalties</td>
-              <td><%= data.royalties%></td>
+              <td>$<%= Number(data.royalties).toFixed(2)%></td>
             </tr>
             <tr>
               <td>Publisher Orders</td>
-              <td><%= data.pub_orders%></td>
+              <td>$<%= Number(data.pub_orders).toFixed(2)%></td>
             </tr>
             <tr>
               <td>TOTAL</td>
-              <td><%= data.sales - data.royalties - data.pub_orders%></td>
+              <td>$<%= Number(data.sales - data.royalties - data.pub_orders).toFixed(2) %></td>
             </tr>
     </table>
 </div>
