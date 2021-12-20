@@ -5,25 +5,52 @@ import {
   Divider,
   Heading,
   Input,
+  Radio,
+  RadioGroup,
   Select,
+  Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import Book from "./Book";
 import API_ADDR from "../Config";
 
+const initBooks = [
+  {
+    isbn: "100",
+    title: "Test Book 1",
+    sale_price: 100,
+    cover_url: "",
+    quantity: 10,
+    genre: "YA",
+    author: "Emma Chadwick",
+  },
+];
+
+const initAddress = [
+  {
+    city: "Ottawa",
+    country: "Canada",
+    postal: "K2L2N9",
+    status: "Lost",
+    street: "McIntosh Way",
+    street_number: "33",
+    addressid: "12",
+  },
+];
 export type IBook = {
   isbn: string;
   title: string;
   sale_price: number;
   cover_url: string;
   quantity: number;
-  genres: string[];
-  authors: string;
+  genre: string;
+  author: string;
 };
 
 type ICartItem = {
@@ -52,18 +79,33 @@ type ITrackedOrder = {
   };
 };
 
+type IShippingAddress = {
+  city: string;
+  country: string;
+  postal: string;
+  status: string;
+  street: string;
+  street_number: string;
+  addressid: string;
+};
+
 const User = () => {
-  const [books, setBooks] = useState<IBook[]>([]);
+  const [books, setBooks] = useState<IBook[]>(initBooks);
   const [genres, setGenres] = useState<IGenre[]>([]);
 
   const [filterByTitle, setFilterByTitle] = useState("");
   const [filterByISBN, setFilterByISBN] = useState("");
   const [filterByAuthor, setFilterByAuthor] = useState("");
   const [filterByGenre, setFilterByGenre] = useState("");
+  const [filterByLTPrice, setFilterByLTPrice] = useState("");
+  const [filterByGTPrice, setFilterByGTPrice] = useState("");
 
   const [cart, setCart] = useState<ICartItem[]>([]);
   const [purchaseTotal, setPurchaseTotal] = useState(0);
+  const [shippingAddresses, setShippingAddresses] =
+    useState<IShippingAddress[]>(initAddress);
 
+  const [address, setAddress] = useState("");
   const [streetNumber, setStreetNumber] = useState("");
   const [streetName, setStreetName] = useState("");
   const [country, setCountry] = useState("");
@@ -80,9 +122,16 @@ const User = () => {
 
   const [author, setAuthor] = useState("");
 
+  const toast = useToast();
+
+  const logout = () => {
+    localStorage.removeItem("userID");
+    window.location.href = "/";
+  };
+
   const getBooks = async () => {
     const res = await fetch(
-      `${API_ADDR}/api/books?isbn=${filterByISBN}&title=${filterByTitle}&genre=${filterByGenre}&author=${filterByAuthor}&nopages=true`,
+      `${API_ADDR}/api/books?isbn=${filterByISBN}&title=${filterByTitle}&genre=${filterByGenre}&author=${filterByAuthor}&ltprice=${filterByLTPrice}&gtprice=${filterByGTPrice}&nopages=true`,
       {
         method: "GET",
         credentials: "include",
@@ -105,6 +154,17 @@ const User = () => {
     setGenres(genres.items);
   };
 
+  const getShippingAddresses = async () => {
+    const res = await fetch(`${API_ADDR}/api/me/address`, {
+      method: "GET",
+      credentials: "include",
+      headers: { Auth: `${localStorage.getItem("userID")}` },
+    });
+
+    const shippingAddresses = await res.json();
+    setShippingAddresses(shippingAddresses.items);
+  };
+
   const getTrackedOrders = async () => {
     const res = await fetch(`${API_ADDR}/api/orders/me`, {
       method: "GET",
@@ -120,22 +180,42 @@ const User = () => {
     getBooks();
     getGenres();
     getTrackedOrders();
+    getShippingAddresses();
+
+    const initCart = localStorage.getItem("cart");
+    initCart && setCart(JSON.parse(initCart));
+
+    initCart && setPurchaseTotal(calculateTotal(JSON.parse(initCart)));
   }, []);
 
   useEffect(() => {
     getBooks();
-  }, [filterByTitle, filterByISBN, filterByGenre, filterByAuthor]);
+  }, [
+    filterByTitle,
+    filterByISBN,
+    filterByGenre,
+    filterByAuthor,
+    filterByLTPrice,
+    filterByGTPrice,
+  ]);
+
+  const calculateTotal = (cart: ICartItem[]) => {
+    let totalCost = 0;
+
+    cart.forEach((item) => {
+      totalCost += item.sale_price * item.amount;
+    });
+
+    return totalCost;
+  };
 
   const handleAuthorFilter = async (author: string) => {
     setAuthor(author);
-    const res = await fetch(
-      `${API_ADDR}/api/authors?name=${author}`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: { Auth: `${localStorage.getItem("userID")}` },
-      }
-    );
+    const res = await fetch(`${API_ADDR}/api/authors?name=${author}`, {
+      method: "GET",
+      credentials: "include",
+      headers: { Auth: `${localStorage.getItem("userID")}` },
+    });
 
     const authors = await res.json();
 
@@ -148,49 +228,61 @@ const User = () => {
     setFilterByAuthor(authorIDs.join(","));
   };
 
-  const addToCart = (
-    isbn: string,
-    title: string,
-    sale_price: number,
-    amount: number
-  ) => {
-    const cartItem = {
-      isbn,
-      title,
-      sale_price,
-      amount,
-    };
-    setPurchaseTotal(purchaseTotal + sale_price);
-    setCart([...cart, cartItem]);
+  const addToCart = (isbn: string) => {
+    const book = books.find((book) => book.isbn === isbn);
+    if (book) {
+      setPurchaseTotal(purchaseTotal + book.sale_price);
+      const cartItem = {
+        isbn: book.isbn,
+        title: book.title,
+        sale_price: book.sale_price,
+        amount: 1,
+      };
+      setCart([...cart, cartItem]);
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
   };
 
   const decrementQuantity = (idx: number) => {
-    let newCart = cart;
+    const itemToDecrement = cart[idx];
+    const filteredCart = cart.filter(
+      (item) => item.isbn !== itemToDecrement.isbn
+    );
 
-    newCart[idx].amount = newCart[idx].amount - 1;
+    itemToDecrement.amount--;
 
-    if (newCart[idx].amount === 0) {
-      newCart.splice(idx, 1);
+    if (itemToDecrement.amount === 0) {
+      setCart(filteredCart);
+    } else {
+      setCart([...filteredCart, itemToDecrement]);
     }
 
-    setCart(newCart);
+    setPurchaseTotal(purchaseTotal - itemToDecrement.sale_price);
+    localStorage.setItem("cart", JSON.stringify(cart));
   };
 
   const incrementQuantity = (idx: number) => {
-    let newCart = cart;
+    const itemToIncrement = cart[idx];
+    const filteredCart = cart.filter(
+      (item) => item.isbn !== itemToIncrement.isbn
+    );
 
-    newCart[idx].amount = newCart[idx].amount + 1;
+    itemToIncrement.amount++;
 
-    setCart(newCart);
+    setPurchaseTotal(purchaseTotal + itemToIncrement.sale_price);
+    setCart([...filteredCart, itemToIncrement]);
+    localStorage.setItem("cart", JSON.stringify(cart));
   };
 
-  const removeFromCart = (idx: number, sale_price: number) => {
-    let newCart = cart;
+  const removeFromCart = (idx: number) => {
+    const itemToRemove = cart[idx];
+    const filteredCart = cart.filter((item) => item.isbn !== itemToRemove.isbn);
 
-    newCart.splice(idx, 1);
-
-    setPurchaseTotal(purchaseTotal - sale_price);
-    setCart(newCart);
+    setPurchaseTotal(
+      purchaseTotal - itemToRemove.amount * itemToRemove.sale_price
+    );
+    setCart(filteredCart);
+    localStorage.setItem("cart", JSON.stringify(cart));
   };
 
   const createShippingAddress = async () => {
@@ -215,7 +307,7 @@ const User = () => {
   };
 
   const createBillingInformation = async () => {
-    const res = await fetch(`${API_ADDR}/api/user/me/billing`, {
+    await fetch(`${API_ADDR}/api/user/me/billing`, {
       method: "POST",
       body: JSON.stringify({
         card_number: cardNumber,
@@ -244,7 +336,9 @@ const User = () => {
   };
 
   const completeOrder = async () => {
-    const addressid = parseInt(await createShippingAddress());
+    const addressid = address
+      ? address
+      : parseInt(await createShippingAddress());
     const items = cartToItems();
     createBillingInformation();
 
@@ -266,7 +360,15 @@ const User = () => {
       },
     });
 
-    const response = await res.json();
+    if (res.status === 200) {
+      toast({
+        title: "Order Successfully Made",
+        description: "Your order went through!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -275,6 +377,7 @@ const User = () => {
         <Tab>Purchase Books</Tab>
         <Tab>Cart</Tab>
         <Tab>Track Orders</Tab>
+        <Tab>Logout</Tab>
       </TabList>
 
       <TabPanels>
@@ -298,6 +401,23 @@ const User = () => {
               value={author}
               onChange={(e) => handleAuthorFilter(e.target.value)}
             />
+            <Box display="flex" justifyContent="space-between">
+              <Input
+                marginRight={4}
+                width="50%"
+                marginBottom={4}
+                placeholder="Filter by price less than"
+                value={filterByLTPrice}
+                onChange={(e) => setFilterByLTPrice(e.target.value)}
+              />
+              <Input
+                width="50%"
+                marginBottom={4}
+                placeholder="Filter by price greater than"
+                value={filterByGTPrice}
+                onChange={(e) => setFilterByGTPrice(e.target.value)}
+              />
+            </Box>
             <Select
               variant="filled"
               marginBottom={4}
@@ -341,9 +461,9 @@ const User = () => {
                   title={book.title}
                   sale_price={book.sale_price}
                   cover_url={book.cover_url}
-                  genres={book.genres}
+                  genre={book.genre}
                   isbn={book.isbn}
-                  authors={book.authors}
+                  author={book.author}
                   quantity={book.quantity}
                   actionText="Add to Cart"
                   action={addToCart}
@@ -414,7 +534,7 @@ const User = () => {
                   <Button
                     width="10%"
                     textAlign="center"
-                    onClick={(_) => removeFromCart(idx, item.sale_price)}
+                    onClick={(_) => removeFromCart(idx)}
                   >
                     Remove from Cart
                   </Button>
@@ -429,8 +549,24 @@ const User = () => {
           <Box margin={6} display="flex" justifyContent={"space-around"}>
             <Box display="flex" flexDirection="column">
               <Heading marginBottom={4}>Shipping Address</Heading>
+              <RadioGroup onChange={setAddress} value={address}>
+                <Stack direction="column">
+                  {shippingAddresses.map((address) => {
+                    return (
+                      <Radio marginBottom={4} value={`${address.addressid}`}>
+                        <Text>
+                          {address.street_number} {address.street},{" "}
+                          {address.country}, {address.city}, {address.postal}
+                        </Text>
+                      </Radio>
+                    );
+                  })}
+                  <Radio value={""}>New Shipping Address</Radio>
+                </Stack>
+              </RadioGroup>
               <Input
                 marginBottom={4}
+                marginTop={4}
                 placeholder="Street Number"
                 value={streetNumber}
                 onChange={(e) => setStreetNumber(e.target.value)}
@@ -532,6 +668,9 @@ const User = () => {
               </Box>
             );
           })}
+        </TabPanel>
+        <TabPanel>
+          <Button onClick={logout}>Logout</Button>
         </TabPanel>
       </TabPanels>
     </Tabs>

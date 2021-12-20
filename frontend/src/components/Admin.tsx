@@ -11,6 +11,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import Book from "./Book";
 import { IBook } from "./Users";
@@ -43,6 +44,13 @@ const Admin = () => {
   const [publisherId, setPublisherId] = useState("");
   const [royalty, setRoyalty] = useState("");
 
+  const toast = useToast();
+
+  const logout = () => {
+    localStorage.removeItem("userID");
+    window.location.href = "/";
+  };
+
   const getBooks = async () => {
     const res = await fetch(`${API_ADDR}/api/books?nopages=true`, {
       method: "GET",
@@ -66,7 +74,6 @@ const Admin = () => {
     });
 
     const reports = await res.json();
-    console.log(reports);
     setReports(reports);
   };
 
@@ -83,7 +90,15 @@ const Admin = () => {
       },
     });
 
-    const result = await res.json();
+    if (res.status === 200) {
+      toast({
+        title: "Book Successfully Removed",
+        description: "Your removal went through!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   const addBook = async () => {
@@ -105,23 +120,28 @@ const Admin = () => {
       },
     });
 
-    const book = await res.json();
+    if (res.status === 200) {
+      toast({
+        title: "Book Successfully Added",
+        description: "The order went through!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   const generateReport = async (reportTitle: string) => {
-    const res = await fetch(
-      `${API_ADDR}/api/reports/${reportTitle}`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          date: "100000",
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Auth: `${localStorage.getItem("userID")}`,
-        },
-      }
-    );
+    const res = await fetch(`${API_ADDR}/api/reports/${reportTitle}`, {
+      method: "POST",
+      body: JSON.stringify({
+        date: "100000",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Auth: `${localStorage.getItem("userID")}`,
+      },
+    });
 
     setRenderedReport(await res.text());
   };
@@ -141,6 +161,7 @@ const Admin = () => {
         <Tab>Add Books</Tab>
         <Tab>Remove Books</Tab>
         <Tab>View Reports</Tab>
+        <Tab>Logout</Tab>
       </TabList>
 
       <TabPanels>
@@ -255,9 +276,9 @@ const Admin = () => {
                   title={book.title}
                   sale_price={book.sale_price}
                   cover_url={book.cover_url}
-                  genres={book.genres}
+                  genre={book.genre}
                   isbn={book.isbn}
-                  authors={book.authors}
+                  author={book.author}
                   quantity={book.quantity}
                   actionText="Remove Book"
                   action={removeBook}
@@ -286,6 +307,9 @@ const Admin = () => {
             })}
           </Box>
           <div dangerouslySetInnerHTML={createMarkup(renderedReport)} />
+        </TabPanel>
+        <TabPanel>
+          <Button onClick={logout}>Logout</Button>
         </TabPanel>
       </TabPanels>
     </Tabs>

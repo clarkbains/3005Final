@@ -14,7 +14,7 @@ interface BookActions {
 const Book: FC<IBook & BookActions> = ({
   title,
   isbn,
-  authors,
+  author,
   quantity,
   sale_price,
   actionText,
@@ -34,7 +34,7 @@ const Book: FC<IBook & BookActions> = ({
         {title}
       </Text>
       <Text width="20%" textAlign={"center"}>
-        {authors && authors}
+        {author && author}
       </Text>
       <Text width="10%" textAlign={"center"}>
         ${sale_price}
