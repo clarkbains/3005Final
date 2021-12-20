@@ -34,7 +34,7 @@ function init() {
             db.release()
         }).catch(e=>console.error(e))
     }
-    setInterval(processOrders, 1000*5, r)
+    setInterval(processOrders, 1000*20, r)
     return r
 }
 

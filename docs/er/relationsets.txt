@@ -14,6 +14,8 @@ User_orders(userid, orderid)
 User_Address(userid, addressid)
 Address(addressid, country, province, code, street_number, street)
 
+fix author
+
 Every address has a unique addressid
 code -> province
 

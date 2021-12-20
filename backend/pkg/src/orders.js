@@ -18,7 +18,8 @@ router.post("/", utils.user, utils.superset(["billing","addressid", "items"]),as
 
     try {
         let address = req.db.prepare("SELECT country, city, province, postal, street_number, street from Address where addressid = ?").get(req.body.addressid)
-
+        utils.checkObject(address)
+        
         let re = await fetch('http://localhost:8978/tracking', {
             method: "POST",
             body: JSON.stringify({

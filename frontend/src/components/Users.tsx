@@ -173,6 +173,7 @@ const User = () => {
     });
 
     const trackedOrders = await res.json();
+    console.log(trackedOrders)
     setTrackedOrders(trackedOrders.items);
   };
 
@@ -647,9 +648,12 @@ const User = () => {
               Date
             </Heading>
             <Heading width="20%" alignItems="center">
+              Postal
+            </Heading>
+            <Heading width="20%" alignItems="center">
               Total
             </Heading>
-            <Heading width="50%" alignItems="center">
+            <Heading width="40%" alignItems="center">
               Status
             </Heading>
           </Box>
@@ -660,7 +664,10 @@ const User = () => {
                   {order.orderid}
                 </Text>
                 <Text width="30%" alignItems="center">
-                  {new Date(order.date).toDateString()}
+                  {new Date(order.date*1000).toDateString()}
+                </Text>
+                <Text width="20%" alignItems="center">
+                  {order.tracking.postal}
                 </Text>
                 <Text width="20%" alignItems="center">
                   ${order.price}

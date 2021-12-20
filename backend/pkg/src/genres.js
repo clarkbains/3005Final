@@ -20,7 +20,10 @@ router.get("/", async (req,res)=>{
 })
 router.post("/", utils.admin, utils.superset(["name"]),(req,res)=>{
     try {
-        req.db.prepare("INSERT INTO Genres (name) VALUES (?)").run(res.locals.checked)
+        let ifo = req.db.prepare("INSERT INTO Genres (name) VALUES (?)").run(res.locals.checked)
+        utils.checkObject(ifo)
+        req.body.genreid = ifo.lastInsertRowid
+        res.json(req.body)
     } catch (e) {
         utils.reqError(res, e, e.message)
     }
