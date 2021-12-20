@@ -5,6 +5,7 @@ import {
   Divider,
   Heading,
   Input,
+  Select,
   Tab,
   TabList,
   TabPanel,
@@ -28,9 +29,21 @@ type IReport = {
   info: string;
 };
 
+type IPublisher = {
+  publisherid: string;
+  name: string;
+  email: string;
+  phone: string;
+  branch_transit: string;
+  financial_institution: string;
+  account_number: string;
+  addressid: string;
+};
+
 const Admin = () => {
   const [books, setBooks] = useState<IBook[]>([]);
   const [reports, setReports] = useState<IReport[]>([]);
+  const [publishers, setPublishers] = useState<IPublisher[]>([]);
   const [renderedReport, setRenderedReport] = useState("");
 
   const [title, setTitle] = useState("");
@@ -75,6 +88,19 @@ const Admin = () => {
 
     const reports = await res.json();
     setReports(reports);
+  };
+
+  const getPublishers = async () => {
+    const res = await fetch(`${API_ADDR}/api/publishers?nopages=true`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Auth: `${localStorage.getItem("userID")}`,
+      },
+    });
+
+    const publishers = await res.json();
+    setPublishers(publishers.items);
   };
 
   const removeBook = async (isbn: string) => {
@@ -206,14 +232,14 @@ const Admin = () => {
                 placeholder="Quantity"
                 onChange={(e) => setQuantity(e.target.value)}
               />
-            </Box>
-            <Box width="30%">
               <Input
                 marginBottom={4}
                 value={salePrice}
                 placeholder="Sale Price"
                 onChange={(e) => setSalePrice(e.target.value)}
               />
+            </Box>
+            <Box width="30%">
               <Input
                 marginBottom={4}
                 value={purchasePrice}
@@ -226,6 +252,21 @@ const Admin = () => {
                 placeholder="# Pages"
                 onChange={(e) => setPages(e.target.value)}
               />
+              <Select
+                variant="filled"
+                marginBottom={4}
+                placeholder="Select a publisher"
+                value={publisherId}
+                onChange={(e) => setPublisherId(e.target.value)}
+              >
+                {publishers.map((publisher) => {
+                  return (
+                    <option value={publisher.publisherid}>
+                      {publisher.name}
+                    </option>
+                  );
+                })}
+              </Select>
               <Input
                 marginBottom={4}
                 value={publisherId}
@@ -238,11 +279,11 @@ const Admin = () => {
                 placeholder="Royalty"
                 onChange={(e) => setRoyalty(e.target.value)}
               />
+              <Button margin={6} width="40%" onClick={(_) => addBook()}>
+                Add Book
+              </Button>
             </Box>
           </Box>
-          <Button margin={6} width="20%" onClick={(_) => addBook()}>
-            Add Book
-          </Button>
         </TabPanel>
         <TabPanel>
           <Box
