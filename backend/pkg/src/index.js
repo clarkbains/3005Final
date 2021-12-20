@@ -19,7 +19,16 @@ API.use("/**", (req,res,next)=>{
     } catch(e){
     }
 
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cookies, Auth"); 
+    let corsAddress = "http://localhost:3000"
+    if (req?.headers?.["host"]?.match(/3005fe/)){
+        corsAddress = "https://3005fe.cbains.ca"
+    }
+
+    res.header("Access-Control-Allow-Origin", corsAddress);
+    
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cookies, Auth"); 
+    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+    
     res.header("Access-Control-Allow-Credentials", "true")
     next()
 })

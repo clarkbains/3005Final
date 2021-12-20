@@ -68,7 +68,8 @@ router.post("/", utils.admin, utils.superset(["title", "isbn", "sale_price", "pu
         }
     }
     try {
-        req.db.prepare(`INSERT INTO Books (title, isbn, sale_price, purchase_price, pages, publisherid, royalty ${db_keys?`, ${db_keys.join(", ")}`:""}) VALUES (?, ?, ?, ?, ? ${db_vals?`, ${db_vals.map(e=>`?`).join(", ")}`:""})`).run([...res.locals.checked, ...db_vals])
+        req.db.prepare(`INSERT INTO Books (title, isbn, sale_price, purchase_price, pages, publisherid, royalty ${db_keys.length>0?`, ${db_keys.join(", ")}`:""}) VALUES (?, ?, ?, ?, ?, ?, ? ${db_vals.length>0?`, ${db_vals.map(e=>`?`).join(", ")}`:""})`).run([...res.locals.checked, ...db_vals])
+        res.json(req.body)
     } catch (e) {
         utils.reqError(res, e, e.message)
     }
