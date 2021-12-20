@@ -133,6 +133,10 @@ const Admin = () => {
       body: JSON.stringify({
         name: author,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        Auth: `${localStorage.getItem("userID")}`,
+      },
     });
 
     const newAuthor = await res.json();
@@ -145,10 +149,40 @@ const Admin = () => {
       body: JSON.stringify({
         name: genre,
       }),
+      headers: {
+        "Content-Type": "application/json",
+        Auth: `${localStorage.getItem("userID")}`,
+      },
     });
 
     const newGenre = await res.json();
     return newGenre;
+  };
+
+  const addAuthorToBook = async (authorid: string) => {
+    await fetch(`${API_ADDR}/api/books/${isbn}/authors`, {
+      method: "POST",
+      body: JSON.stringify({
+        authors: [authorid],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Auth: `${localStorage.getItem("userID")}`,
+      },
+    });
+  };
+
+  const addGenreToBook = async (genreid: string) => {
+    await fetch(`${API_ADDR}/api/books/${isbn}/genres`, {
+      method: "POST",
+      body: JSON.stringify({
+        genres: [genreid],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Auth: `${localStorage.getItem("userID")}`,
+      },
+    });
   };
 
   const addBook = async () => {
@@ -182,10 +216,9 @@ const Admin = () => {
 
     const author = await createAuthor();
     const genre = await createGenre();
-  };
 
-  const addAuthorToBook = async (authorid: string) => {
-    const res = await fetch(`${API_ADDR}/api/books/${isbn}/authors`);
+    addAuthorToBook(author.authorid);
+    addGenreToBook(genre.genreid);
   };
 
   const generateReport = async (reportTitle: string) => {
