@@ -37,6 +37,20 @@ type IGenre = {
   name: string;
 };
 
+type ITrackedOrder = {
+  orderid: number;
+  price: number;
+  date: number;
+  tracking: {
+    city: string;
+    country: string;
+    postal: string;
+    status: string;
+    street: string;
+    street_number: string;
+  };
+};
+
 const User = () => {
   const [books, setBooks] = useState<IBook[]>([]);
   const [genres, setGenres] = useState<IGenre[]>([]);
@@ -61,7 +75,7 @@ const User = () => {
   const [expiryMonth, setExpiryMonth] = useState("");
   const [expiryYear, setExpiryYear] = useState("");
 
-  const [trackingNumber, setTrackingNumber] = useState("");
+  const [trackedOrders, setTrackedOrders] = useState<ITrackedOrder[]>([]);
 
   const [author, setAuthor] = useState("");
 
@@ -90,9 +104,21 @@ const User = () => {
     setGenres(genres.items);
   };
 
+  const getTrackedOrders = async () => {
+    const res = await fetch("http://localhost:9756/api/orders/me", {
+      method: "GET",
+      credentials: "include",
+      headers: { Auth: `${localStorage.getItem("userID")}` },
+    });
+
+    const trackedOrders = await res.json();
+    setTrackedOrders(trackedOrders.items);
+  };
+
   useEffect(() => {
     getBooks();
     getGenres();
+    getTrackedOrders();
   }, []);
 
   useEffect(() => {
@@ -143,7 +169,7 @@ const User = () => {
     newCart[idx].amount = newCart[idx].amount - 1;
 
     if (newCart[idx].amount === 0) {
-      newCart.splice(idx);
+      newCart.splice(idx, 1);
     }
 
     setCart(newCart);
@@ -161,7 +187,7 @@ const User = () => {
   const removeFromCart = (idx: number, sale_price: number) => {
     let newCart = cart;
 
-    newCart.splice(idx);
+    newCart.splice(idx, 1);
 
     setPurchaseTotal(purchaseTotal - sale_price);
     setCart(newCart);
@@ -244,17 +270,12 @@ const User = () => {
     console.log(response);
   };
 
-  const trackOrder = () => {
-    //TODO: get tracking info
-    console.log(trackingNumber);
-  };
-
   return (
     <Tabs>
       <TabList>
         <Tab>Purchase Books</Tab>
         <Tab>Cart</Tab>
-        <Tab>Track Order</Tab>
+        <Tab>Track Orders</Tab>
       </TabList>
 
       <TabPanels>
@@ -479,16 +500,39 @@ const User = () => {
           </Box>
         </TabPanel>
         <TabPanel>
-          <Input
-            padding={6}
-            marginBottom={6}
-            placeholder="Enter order #"
-            onChange={(e) => setTrackingNumber(e.target.value)}
-          />
-          <Button padding={6} onClick={trackOrder}>
-            {" "}
-            Track Order{" "}
-          </Button>
+          <Heading margin={6}>Tracked Orders</Heading>
+          <Box margin={6} display="flex" justifyContent={"space-around"}>
+            <Heading width="20%" alignItems="center">
+              Order #
+            </Heading>
+            <Heading width="30%" alignItems="center">
+              Date
+            </Heading>
+            <Heading width="20%" alignItems="center">
+              Total
+            </Heading>
+            <Heading width="50%" alignItems="center">
+              Status
+            </Heading>
+          </Box>
+          {trackedOrders.map((order) => {
+            return (
+              <Box margin={8} display="flex" justifyContent={"space-around"}>
+                <Text width="20%" alignItems="center">
+                  {order.orderid}
+                </Text>
+                <Text width="30%" alignItems="center">
+                  {order.date}
+                </Text>
+                <Text width="20%" alignItems="center">
+                  ${order.price}
+                </Text>
+                <Text width="50%" alignItems="center">
+                  {order.tracking.status ?? "Unknown"}
+                </Text>
+              </Box>
+            );
+          })}
         </TabPanel>
       </TabPanels>
     </Tabs>
