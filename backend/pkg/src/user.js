@@ -7,6 +7,7 @@ const meMiddleware = (req,res,next)=>{
     if (req.params.id == "me"){
         req.params.id = req.session.user.userid
     }
+    //console.log("me!")
     next()
 }
 
@@ -97,6 +98,7 @@ router.get ("/:id/billing", utils.user, meMiddleware, (req,res)=>{
 
 
 router.get("/:id", utils.user, meMiddleware, (req, res, next)=>{
+    console.log("foo")
     try {
         if (req.params.id != req.session.user.userid && !req.session.user.admin){
             throw new Error("Only administrators can get for another user.")
@@ -105,6 +107,7 @@ router.get("/:id", utils.user, meMiddleware, (req, res, next)=>{
         let r = req.db.prepare("SELECT username, email, phone, admin FROM Users WHERE userid = ?").get(req.params.id)
         res.json(r)
     } catch (e) {
+        console.log(e)
         utils.reqError(res, e, e.message)
     }
     

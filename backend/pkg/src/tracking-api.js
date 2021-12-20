@@ -12,7 +12,7 @@ let trackingInfo = {}
 try {
     trackingInfo = JSON.parse(String(fs.readFileSync(SAVE_LOC)))
 } catch {
-    trackingInfo = {}
+    trackingInfo = {'Canada Post':{'1111111':{country:"Canada"}}}
     saveTracking()
 }
 
