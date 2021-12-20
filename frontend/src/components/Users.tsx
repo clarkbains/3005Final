@@ -20,7 +20,7 @@ export type IBook = {
   title: string;
   sale_price: number;
   cover_url: string;
-  available: number;
+  quantity: number;
   genres: string[];
   authors: string;
 };
@@ -343,7 +343,7 @@ const User = () => {
                   genres={book.genres}
                   isbn={book.isbn}
                   authors={book.authors}
-                  available={book.available}
+                  quantity={book.quantity}
                   actionText="Add to Cart"
                   action={addToCart}
                 />

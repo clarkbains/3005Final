@@ -35,7 +35,7 @@ const Admin = () => {
   const [isbn, setIsbn] = useState("");
   const [author, setAuthor] = useState("");
   const [genre, setGenre] = useState("");
-  const [available, setAvailable] = useState("");
+  const [quantity, setQuantity] = useState("");
   const [salePrice, setSalePrice] = useState("");
   const [purchasePrice, setPurchasePrice] = useState("");
   const [pages, setPages] = useState("");
@@ -96,7 +96,7 @@ const Admin = () => {
         pages,
         publisherid: publisherId,
         royalty,
-        available: 1,
+        quantity,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -137,7 +137,7 @@ const Admin = () => {
   return (
     <Tabs>
       <TabList>
-        <Tab>Order Books</Tab>
+        <Tab>Add Books</Tab>
         <Tab>Remove Books</Tab>
         <Tab>View Reports</Tab>
       </TabList>
@@ -180,9 +180,9 @@ const Admin = () => {
               />
               <Input
                 marginBottom={4}
-                value={available}
-                placeholder="Available"
-                onChange={(e) => setAvailable(e.target.value)}
+                value={quantity}
+                placeholder="Quantity"
+                onChange={(e) => setQuantity(e.target.value)}
               />
             </Box>
             <Box width="30%">
@@ -257,7 +257,7 @@ const Admin = () => {
                   genres={book.genres}
                   isbn={book.isbn}
                   authors={book.authors}
-                  available={book.available}
+                  quantity={book.quantity}
                   actionText="Remove Book"
                   action={removeBook}
                 />

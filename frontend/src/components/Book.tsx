@@ -1,4 +1,4 @@
-import { Box, Text, Button, Image } from "@chakra-ui/react";
+import { Box, Text, Button } from "@chakra-ui/react";
 import { FC } from "react";
 import { IBook } from "./Users";
 
@@ -15,7 +15,7 @@ const Book: FC<IBook & BookActions> = ({
   title,
   isbn,
   authors,
-  available,
+  quantity,
   sale_price,
   actionText,
   action,
@@ -41,7 +41,7 @@ const Book: FC<IBook & BookActions> = ({
       </Text>
 
       <Text width="10%" textAlign={"center"}>
-        {available}
+        {quantity}
       </Text>
       <Button width="10%" onClick={(_) => action(isbn, title, sale_price, 1)}>
         {actionText}
