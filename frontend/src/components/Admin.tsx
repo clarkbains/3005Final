@@ -16,16 +16,14 @@ import Book from "./Book";
 import { IBook } from "./Users";
 
 type IReport = {
-  title: {
-    parameters: [
-      {
-        name: string;
-        type: string;
-        label: string;
-      }
-    ];
-    info: string;
-  };
+  parameters: [
+    {
+      name: string;
+      type: string;
+      label: string;
+    }
+  ];
+  info: string;
 };
 
 const Admin = () => {
@@ -67,6 +65,7 @@ const Admin = () => {
     });
 
     const reports = await res.json();
+    console.log(reports);
     setReports(reports);
   };
 
@@ -273,7 +272,7 @@ const Admin = () => {
             {Object.entries(reports).map((report) => {
               return (
                 <>
-                  <Text marginBottom={4}>{report[0]}</Text>
+                  <Text marginBottom={4}>{report[1].info}</Text>
                   <Button
                     marginBottom={4}
                     onClick={(_) => generateReport(report[0])}
