@@ -260,6 +260,9 @@ const Admin = () => {
             <Heading width="20%" textAlign={"center"}>
               Authors
             </Heading>
+            <Heading width="20%" textAlign="center">
+              Genres
+            </Heading>
             <Heading width="10%" textAlign={"center"}>
               Price
             </Heading>

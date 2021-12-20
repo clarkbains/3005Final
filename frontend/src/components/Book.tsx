@@ -16,6 +16,7 @@ const Book: FC<IBook & BookActions> = ({
   isbn,
   author,
   quantity,
+  genre,
   sale_price,
   actionText,
   action,
@@ -35,6 +36,9 @@ const Book: FC<IBook & BookActions> = ({
       </Text>
       <Text width="20%" textAlign={"center"}>
         {author && author}
+      </Text>
+      <Text width="20%" textAlign={"center"}>
+        {genre && genre}
       </Text>
       <Text width="10%" textAlign={"center"}>
         ${sale_price}
