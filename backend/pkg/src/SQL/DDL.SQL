@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS
         `sale_price` REAL NOT NULL,
         `purchase_price` REAL NOT NULL,
         `cover_url` TEXT,
-        `available` INTEGER NOT NULL DEFAULT (0),
+        `available` INTEGER NOT NULL DEFAULT (1),
         `quantity` INTEGER NOT NULL DEFAULT (0),
         `publisherid` INTEGER NOT NULL,
         `royalty` REAL NOT NULL,

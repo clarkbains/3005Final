@@ -44,11 +44,11 @@ router.get("/", async (req,res)=>{
     
     /*let nameList = (req.query?.name?.split(/,\s?/) ?? [""]).map(e=>`%${e}%`)
 */  
-    let wcStr = `from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.genreid = book_genres.genreid where ${wc.join(" AND ")}  group by isbn, title, sale_price, cover_url, available`
+    let wcStr = `from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.genreid = book_genres.genreid where ${wc.join(" AND ")}  group by isbn, title, sale_price, cover_url, available, quantity`
     
     try {
         let pgntr = utils.paginator(
-            (pg)=>req.db.prepare(`SELECT isbn, title, sale_price, cover_url, available, group_concat(Authors.name, ', ') as authors, group_concat(Genres.name, ', ') as genres ${wcStr} ORDER BY isbn ${pg}`).all(wv),
+            (pg)=>req.db.prepare(`SELECT isbn, title, quantity, sale_price, cover_url, available, group_concat(Authors.name, ', ') as authors, group_concat(Genres.name, ', ') as genres ${wcStr} ORDER BY isbn ${pg}`).all(wv),
             ()=>req.db.prepare(`SELECT count(*) as cnt ${wcStr}`).get(wv)?.cnt)
             
         res.json(await pgntr(req.query))
@@ -78,7 +78,6 @@ router.patch("/:id", utils.admin, utils.superset(["id"], "params"),(req, res, ne
     try {
         let currentBook = req.db.prepare("SELECT * from Books where isbn = ?").get(res.locals.checked)
 
-        //ISBN should never be changed, quantity should be changed some other way so we can use a stored proc.
         let newBookObj = Object.assign(currentBook, 
             req.body)
 
