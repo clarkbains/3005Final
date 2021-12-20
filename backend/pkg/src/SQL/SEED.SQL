@@ -55,13 +55,7 @@ INSERT INTO book_genres (genreid, isbn) VALUES ('5', '11101')
 
 INSERT INTO book_authors (authorid, isbn) VALUES ('3', '11112')
 
-INSERT INTO book_authors (authorid, isbn) VALUES ('4', '11112')
-
 INSERT INTO book_authors (authorid, isbn) VALUES ('2', '11109')
-
-INSERT INTO book_authors (authorid, isbn) VALUES ('1', '111145')
-
-INSERT INTO book_authors (authorid, isbn) VALUES ('2', '111145')
 
 INSERT INTO book_authors (authorid, isbn) VALUES ('4', '111145')
 

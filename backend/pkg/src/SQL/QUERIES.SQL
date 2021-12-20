@@ -99,9 +99,9 @@ DELETE FROM Genres where genreid = ?
 --[BOOKS.JS]
 --paginated Search (where wc is an array of search params assembled from the request)
 --  data
-SELECT isbn, title, sale_price, cover_url, available, group_concat(Authors.name, ', ') as authors, group_concat(Genres.name, ', ') as genresfrom Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.isbn = Books.isbn where ${wc.join(" AND ")} group by isbn, title, sale_price, cover_url, available  ORDER BY isbn ${pg}
+SELECT isbn, title, quantity, sale_price, cover_url, available, group_concat(DISTINCT Authors.name) as authors, group_concat(DISTINCT Genres.name) as genres from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.genreid = book_genres.genreid where ${wc.join(" AND ")}  group by isbn ORDER BY isbn ${pg}
 --  count
-SELECT count(*) as cnt from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.isbn = Books.isbn where ${wc.join(" AND ")} group by isbn, title, sale_price, cover_url, available 
+SELECT count(*) as cnt from Books left natural join book_authors left natural join Authors left natural join book_genres left join Genres on Genres.genreid = book_genres.genreid where ${wc.join(" AND ")}  group by isbn 
 
 --add book (db_keys is a set of optional attributes like cover_url, and db_vals is their value. Things are only in this set if present)
 INSERT INTO Books (title, isbn, sale_price, purchase_price, pages, publisherid, royalty ${db_keys?`, ${db_keys.join(", ")}`:""}) VALUES (?, ?, ?, ?, ? ${db_vals?`, ${db_vals.map(e=>`?`).join(", ")}`:""})
