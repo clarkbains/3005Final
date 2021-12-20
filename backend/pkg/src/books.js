@@ -68,6 +68,14 @@ router.post("/", utils.admin, utils.superset(["title", "isbn", "sale_price", "pu
     }
     try {
         req.db.prepare(`INSERT INTO Books (title, isbn, sale_price, purchase_price, pages, publisherid, royalty ${db_keys.length>0?`, ${db_keys.join(", ")}`:""}) VALUES (?, ?, ?, ?, ?, ?, ? ${db_vals.length>0?`, ${db_vals.map(e=>`?`).join(", ")}`:""})`).run([...res.locals.checked, ...db_vals])
+
+        if(req.body.quantity){
+            if (req.body.quantity <= 10){
+                throw new Error("Must order >= 10")
+            }
+            req.db.prepare("INSERT INTO Publisher_Orders (publisherid, isbn, quantity, received, price) VALUES (?, ?, ?, ?, ?*?)").run(req.body.publisherid, req.body.isbn, req.body.quantity, 0, req.body.quantity, req.body.purchase_price)
+        }
+
         res.json(req.body)
     } catch (e) {
         utils.reqError(res, e, e.message)
@@ -89,19 +97,6 @@ router.patch("/:id", utils.admin, utils.superset(["id"], "params"),(req, res, ne
         utils.reqError(res, e, e.message)
     }
     
-})
-router.post ("/:id/quantity", utils.admin, utils.superset(["quantity"]), (req,res)=>{
-    try {
-        let book = req.db.prepare("SELECT purchase_price, publisherid  FROM Books where isbn = ?").get(req.params.id)
-        let ifo = req.db.prepare("INSERT INTO Publisher_Orders (publisherid, isbn, quantity, received, price) VALUES (?, ?, ?, ?, ?)").run(book.publisherid, req.params.id, req.body.quantity, 0, Number(req.body.quantity)*book.purchase_price)
-        utils.checkObject(ifo)
-
-        let order = req.db.prepare("SELECT * FROM Publisher_Orders WHERE publisher_orderid = ?").get(ifo.lastInsertRowid)
-        res.json(order)
-        
-    } catch (e) {
-        utils.reqError(res, e, e.message)
-    }
 })
 
 router.post ("/:id/genres", utils.admin, utils.superset(["genres"]), (req,res)=>{
