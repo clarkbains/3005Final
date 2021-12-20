@@ -173,7 +173,6 @@ const User = () => {
     }
 
     setCart(newCart);
-    console.log(cart);
   };
 
   const incrementQuantity = (idx: number) => {
@@ -267,7 +266,6 @@ const User = () => {
     });
 
     const response = await res.json();
-    console.log(response);
   };
 
   return (
@@ -522,7 +520,7 @@ const User = () => {
                   {order.orderid}
                 </Text>
                 <Text width="30%" alignItems="center">
-                  {order.date}
+                  {new Date(order.date).toDateString()}
                 </Text>
                 <Text width="20%" alignItems="center">
                   ${order.price}

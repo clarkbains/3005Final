@@ -35,6 +35,9 @@ const Admin = () => {
 
   const [title, setTitle] = useState("");
   const [isbn, setIsbn] = useState("");
+  const [author, setAuthor] = useState("");
+  const [genre, setGenre] = useState("");
+  const [available, setAvailable] = useState("");
   const [salePrice, setSalePrice] = useState("");
   const [purchasePrice, setPurchasePrice] = useState("");
   const [pages, setPages] = useState("");
@@ -51,7 +54,6 @@ const Admin = () => {
     });
 
     const books = await res.json();
-    console.log(books);
     setBooks(books);
   };
 
@@ -104,7 +106,6 @@ const Admin = () => {
     });
 
     const book = await res.json();
-    console.log(book);
   };
 
   const generateReport = async (reportTitle: string) => {
@@ -143,61 +144,84 @@ const Admin = () => {
       </TabList>
 
       <TabPanels>
-        <TabPanel>
+        <TabPanel textAlign="center">
+          <Heading textAlign="center" marginBottom={4}>
+            Add New Book
+          </Heading>
           <Box
             margin={6}
-            width="40%"
             display="flex"
-            flexDirection="column"
-            alignItems="center"
+            flexDirection="row"
+            justifyContent="center"
           >
-            <Heading marginBottom={4}>Add New Book</Heading>
-            <Input
-              marginBottom={4}
-              value={title}
-              placeholder="Title"
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <Input
-              marginBottom={4}
-              value={isbn}
-              placeholder="ISBN"
-              onChange={(e) => setIsbn(e.target.value)}
-            />
-            <Input
-              marginBottom={4}
-              value={salePrice}
-              placeholder="Sale Price"
-              onChange={(e) => setSalePrice(e.target.value)}
-            />
-            <Input
-              marginBottom={4}
-              value={purchasePrice}
-              placeholder="Purchase Price"
-              onChange={(e) => setPurchasePrice(e.target.value)}
-            />
-            <Input
-              marginBottom={4}
-              value={pages}
-              placeholder="# Pages"
-              onChange={(e) => setPages(e.target.value)}
-            />
-            <Input
-              marginBottom={4}
-              value={publisherId}
-              placeholder="Publisher ID"
-              onChange={(e) => setPublisherId(e.target.value)}
-            />
-            <Input
-              marginBottom={4}
-              value={royalty}
-              placeholder="Royalty"
-              onChange={(e) => setRoyalty(e.target.value)}
-            />
-            <Button alignSelf="start" width="40%" onClick={(_) => addBook()}>
-              Add Book
-            </Button>
+            <Box width="30%" marginRight={6}>
+              <Input
+                marginBottom={4}
+                value={title}
+                placeholder="Title"
+                onChange={(e) => setTitle(e.target.value)}
+              />
+              <Input
+                marginBottom={4}
+                value={isbn}
+                placeholder="ISBN"
+                onChange={(e) => setIsbn(e.target.value)}
+              />
+              <Input
+                marginBottom={4}
+                value={author}
+                placeholder="Author"
+                onChange={(e) => setAuthor(e.target.value)}
+              />
+              <Input
+                marginBottom={4}
+                value={genre}
+                placeholder="Genre"
+                onChange={(e) => setGenre(e.target.value)}
+              />
+              <Input
+                marginBottom={4}
+                value={available}
+                placeholder="Available"
+                onChange={(e) => setAvailable(e.target.value)}
+              />
+            </Box>
+            <Box width="30%">
+              <Input
+                marginBottom={4}
+                value={salePrice}
+                placeholder="Sale Price"
+                onChange={(e) => setSalePrice(e.target.value)}
+              />
+              <Input
+                marginBottom={4}
+                value={purchasePrice}
+                placeholder="Purchase Price"
+                onChange={(e) => setPurchasePrice(e.target.value)}
+              />
+              <Input
+                marginBottom={4}
+                value={pages}
+                placeholder="# Pages"
+                onChange={(e) => setPages(e.target.value)}
+              />
+              <Input
+                marginBottom={4}
+                value={publisherId}
+                placeholder="Publisher ID"
+                onChange={(e) => setPublisherId(e.target.value)}
+              />
+              <Input
+                marginBottom={4}
+                value={royalty}
+                placeholder="Royalty"
+                onChange={(e) => setRoyalty(e.target.value)}
+              />
+            </Box>
           </Box>
+          <Button margin={6} width="20%" onClick={(_) => addBook()}>
+            Add Book
+          </Button>
         </TabPanel>
         <TabPanel>
           <Box
