@@ -14,6 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Book from "./Book";
+import API_ADDR from "../Config";
 
 export type IBook = {
   isbn: string;
@@ -81,7 +82,7 @@ const User = () => {
 
   const getBooks = async () => {
     const res = await fetch(
-      `http://localhost:9756/api/books?isbn=${filterByISBN}&title=${filterByTitle}&genre=${filterByGenre}&author=${filterByAuthor}&nopages=true`,
+      `${API_ADDR}/api/books?isbn=${filterByISBN}&title=${filterByTitle}&genre=${filterByGenre}&author=${filterByAuthor}&nopages=true`,
       {
         method: "GET",
         credentials: "include",
@@ -94,7 +95,7 @@ const User = () => {
   };
 
   const getGenres = async () => {
-    const res = await fetch("http://localhost:9756/api/genres", {
+    const res = await fetch(`${API_ADDR}/api/genres`, {
       method: "GET",
       credentials: "include",
       headers: { Auth: `${localStorage.getItem("userID")}` },
@@ -105,7 +106,7 @@ const User = () => {
   };
 
   const getTrackedOrders = async () => {
-    const res = await fetch("http://localhost:9756/api/orders/me", {
+    const res = await fetch(`${API_ADDR}/api/orders/me`, {
       method: "GET",
       credentials: "include",
       headers: { Auth: `${localStorage.getItem("userID")}` },
@@ -128,7 +129,7 @@ const User = () => {
   const handleAuthorFilter = async (author: string) => {
     setAuthor(author);
     const res = await fetch(
-      `http://localhost:9756/api/authors?name=${author}`,
+      `${API_ADDR}/api/authors?name=${author}`,
       {
         method: "GET",
         credentials: "include",
@@ -193,7 +194,7 @@ const User = () => {
   };
 
   const createShippingAddress = async () => {
-    const res = await fetch("http://localhost:9756/api/user/me/address", {
+    const res = await fetch(`${API_ADDR}/api/user/me/address`, {
       method: "POST",
       body: JSON.stringify({
         street_number: streetNumber,
@@ -214,7 +215,7 @@ const User = () => {
   };
 
   const createBillingInformation = async () => {
-    const res = await fetch("http://localhost:9756/api/user/me/billing", {
+    const res = await fetch(`${API_ADDR}/api/user/me/billing`, {
       method: "POST",
       body: JSON.stringify({
         card_number: cardNumber,
@@ -247,7 +248,7 @@ const User = () => {
     const items = cartToItems();
     createBillingInformation();
 
-    const res = await fetch("http://localhost:9756/api/orders", {
+    const res = await fetch(`${API_ADDR}/api/orders`, {
       method: "POST",
       body: JSON.stringify({
         items,

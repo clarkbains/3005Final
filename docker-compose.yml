@@ -16,3 +16,5 @@ services:
     restart: always
     ports:
       - '9757:3000'
+    environment:
+      API_ADDR: http://localhost:9756
