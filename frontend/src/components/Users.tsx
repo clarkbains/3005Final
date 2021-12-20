@@ -15,27 +15,39 @@ import {
 } from "@chakra-ui/react";
 import Book from "./Book";
 
-const initialBooks = [
-  { title: "Dune", isbn: "293829057af", author: "Gwyneth Paltrow" },
-  { title: "Spooderman", isbn: "r23847897a89f", author: "Arthur Conan Doyle" },
-];
+export type IBook = {
+  isbn: string;
+  title: string;
+  sale_price: number;
+  cover_url: string;
+  available: number;
+  genres: string[];
+  authors: string;
+};
 
-const initialGenres = ["Nonfiction", "Action", "Romance", "Comedy"];
+type ICartItem = {
+  isbn: string;
+  title: string;
+  sale_price: number;
+  amount: number;
+};
 
-const initialCart = [
-  { title: "Spooderman", isbn: "r23847897a89f", author: "Arthur Conan Doyle" },
-];
+type IGenre = {
+  genreid: string;
+  name: string;
+};
 
 const User = () => {
-  const [books, setBooks] = useState(initialBooks);
-  const [genres, setGenres] = useState(initialGenres);
+  const [books, setBooks] = useState<IBook[]>([]);
+  const [genres, setGenres] = useState<IGenre[]>([]);
 
   const [filterByTitle, setFilterByTitle] = useState("");
   const [filterByISBN, setFilterByISBN] = useState("");
   const [filterByAuthor, setFilterByAuthor] = useState("");
   const [filterByGenre, setFilterByGenre] = useState("");
 
-  const [cart, setCart] = useState(initialCart);
+  const [cart, setCart] = useState<ICartItem[]>([]);
+  const [purchaseTotal, setPurchaseTotal] = useState(0);
 
   const [streetNumber, setStreetNumber] = useState("");
   const [streetName, setStreetName] = useState("");
@@ -51,29 +63,185 @@ const User = () => {
 
   const [trackingNumber, setTrackingNumber] = useState("");
 
+  const [author, setAuthor] = useState("");
+
+  const getBooks = async () => {
+    const res = await fetch(
+      `http://localhost:9756/api/books?isbn=${filterByISBN}&title=${filterByTitle}&genre=${filterByGenre}&author=${filterByAuthor}`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: { Auth: `${localStorage.getItem("userID")}` },
+      }
+    );
+
+    const books = await res.json();
+    setBooks(books.items);
+  };
+
+  const getGenres = async () => {
+    const res = await fetch("http://localhost:9756/api/genres", {
+      method: "GET",
+      credentials: "include",
+      headers: { Auth: `${localStorage.getItem("userID")}` },
+    });
+
+    const genres = await res.json();
+    setGenres(genres.items);
+  };
+
   useEffect(() => {
-    //TODO: fetch initial books
-    //TODO: fetch initial genres
-    //TODO: fetch initial cart
+    getBooks();
+    getGenres();
   }, []);
 
   useEffect(() => {
-    //TODO: fetch books on filters
+    getBooks();
   }, [filterByTitle, filterByISBN, filterByGenre, filterByAuthor]);
 
-  const addToCart = (title: string) => {
-    //TODO: add books to cart
-    console.log("Adding book to cart:  ", title);
+  const handleAuthorFilter = async (author: string) => {
+    setAuthor(author);
+    const res = await fetch(
+      `http://localhost:9756/api/authors?name=${author}`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: { Auth: `${localStorage.getItem("userID")}` },
+      }
+    );
+
+    const authors = await res.json();
+
+    const authorIDs: string[] = [];
+
+    authors.items.forEach((author: any) => {
+      authorIDs.push(author.authorid);
+    });
+
+    setFilterByAuthor(authorIDs.join(","));
   };
 
-  const removeFromCart = (title: string) => {
-    //TODO: remove books
-    console.log("Removing ", title);
+  const addToCart = (
+    isbn: string,
+    title: string,
+    sale_price: number,
+    amount: number
+  ) => {
+    const cartItem = {
+      isbn,
+      title,
+      sale_price,
+      amount,
+    };
+    setPurchaseTotal(purchaseTotal + sale_price);
+    setCart([...cart, cartItem]);
   };
 
-  const completeOrder = () => {
-    //TODO: complete order
-    console.log("Ordering");
+  const decrementQuantity = (idx: number) => {
+    let newCart = cart;
+
+    newCart[idx].amount = newCart[idx].amount - 1;
+
+    if (newCart[idx].amount === 0) {
+      newCart.splice(idx);
+    }
+
+    setCart(newCart);
+    console.log(cart);
+  };
+
+  const incrementQuantity = (idx: number) => {
+    let newCart = cart;
+
+    newCart[idx].amount = newCart[idx].amount + 1;
+
+    setCart(newCart);
+  };
+
+  const removeFromCart = (idx: number, sale_price: number) => {
+    let newCart = cart;
+
+    newCart.splice(idx);
+
+    setPurchaseTotal(purchaseTotal - sale_price);
+    setCart(newCart);
+  };
+
+  const createShippingAddress = async () => {
+    const res = await fetch("http://localhost:9756/api/user/me/address", {
+      method: "POST",
+      body: JSON.stringify({
+        street_number: streetNumber,
+        street: streetName,
+        country,
+        city,
+        province,
+        postal: postalCode,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Auth: `${localStorage.getItem("userID")}`,
+      },
+    });
+
+    const addressReturn = await res.json();
+    return addressReturn.addressid;
+  };
+
+  const createBillingInformation = async () => {
+    const res = await fetch("http://localhost:9756/api/user/me/billing", {
+      method: "POST",
+      body: JSON.stringify({
+        card_number: cardNumber,
+        ccv: CCVNumber,
+        exp_month: expiryMonth,
+        exp_year: expiryYear,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Auth: `${localStorage.getItem("userID")}`,
+      },
+    });
+  };
+
+  const cartToItems = () => {
+    const itemsToBuy: any[] = [];
+
+    cart.forEach((item) => {
+      itemsToBuy.push({
+        isbn: item.isbn,
+        quantity: item.amount,
+      });
+    });
+
+    return itemsToBuy;
+  };
+
+  const completeOrder = async () => {
+    const addressid = parseInt(await createShippingAddress());
+    const items = cartToItems();
+    createBillingInformation();
+
+    const res = await fetch("http://localhost:9756/api/orders", {
+      method: "POST",
+      body: JSON.stringify({
+        items,
+        billing: {
+          card_number: cardNumber,
+          ccv: CCVNumber,
+          exp_month: expiryMonth,
+          exp_year: expiryYear,
+        },
+        addressid,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Auth: `${localStorage.getItem("userID")}`,
+      },
+    });
+
+    const response = await res.json();
+    console.log(response);
   };
 
   const trackOrder = () => {
@@ -107,8 +275,8 @@ const User = () => {
             <Input
               marginBottom={4}
               placeholder="Filter by author"
-              value={filterByAuthor}
-              onChange={(e) => setFilterByAuthor(e.target.value)}
+              value={author}
+              onChange={(e) => handleAuthorFilter(e.target.value)}
             />
             <Select
               variant="filled"
@@ -118,27 +286,45 @@ const User = () => {
               onChange={(e) => setFilterByGenre(e.target.value)}
             >
               {genres.map((genre) => {
-                return <option value={genre}>{genre}</option>;
+                return <option value={genre.genreid}>{genre.name}</option>;
               })}
             </Select>
           </Box>
-          <Box margin={6} display="flex" alignItems={"center"}>
-            <Box display="flex" width="50%" justifyContent="space-around">
-              <Heading>ISBN</Heading>
-              <Heading>Title</Heading>
-            </Box>
-            <Box display="flex" width="50%" justifyContent="space-around">
-              <Heading>Author</Heading>
-              <Heading></Heading>
-            </Box>
+          <Box
+            margin={6}
+            display="flex"
+            alignItems={"center"}
+            justifyContent={"space-between"}
+          >
+            <Heading width="10%" textAlign={"center"}>
+              ISBN
+            </Heading>
+            <Heading width="20%" textAlign={"center"}>
+              Title
+            </Heading>
+            <Heading width="20%" textAlign={"center"}>
+              Authors
+            </Heading>
+            <Heading width="10%" textAlign={"center"}>
+              Price
+            </Heading>
+
+            <Heading width="10%" textAlign={"center"}>
+              Quantity Available
+            </Heading>
+            <Heading width="10%"></Heading>
           </Box>
-          {books.map((book) => {
+          {books.map((book: IBook) => {
             return (
               <>
                 <Book
                   title={book.title}
+                  sale_price={book.sale_price}
+                  cover_url={book.cover_url}
+                  genres={book.genres}
                   isbn={book.isbn}
-                  author={book.author}
+                  authors={book.authors}
+                  available={book.available}
                   actionText="Add to Cart"
                   action={addToCart}
                 />
@@ -148,30 +334,78 @@ const User = () => {
           })}
         </TabPanel>
         <TabPanel>
-          <Box margin={6} display="flex" alignItems={"center"}>
-            <Box display="flex" width="50%" justifyContent="space-around">
-              <Heading>ISBN</Heading>
-              <Heading>Title</Heading>
-            </Box>
-            <Box display="flex" width="50%" justifyContent="space-around">
-              <Heading>Author</Heading>
-              <Heading></Heading>
-            </Box>
+          <Box
+            margin={6}
+            display="flex"
+            alignItems={"center"}
+            justifyContent={"space-between"}
+          >
+            <Heading width="5%" textAlign={"center"}>
+              #
+            </Heading>
+            <Heading width="10%" textAlign={"center"}>
+              ISBN
+            </Heading>
+            <Heading width="20%" textAlign={"center"}>
+              Title
+            </Heading>
+            <Heading width="10%" textAlign={"center"}>
+              Price
+            </Heading>
+            <Heading width="10%" textAlign={"center"}>
+              Quantity
+            </Heading>
+            <Heading width="10%"></Heading>
           </Box>
-          {cart.map((book) => {
+          {cart.map((item: ICartItem, idx) => {
             return (
               <>
-                <Book
-                  title={book.title}
-                  isbn={book.isbn}
-                  author={book.author}
-                  actionText="Remove"
-                  action={removeFromCart}
-                />
+                <Box
+                  margin={6}
+                  display="flex"
+                  alignItems={"center"}
+                  justifyContent={"space-between"}
+                >
+                  <Text width="5%">{idx}</Text>
+                  <Text width="10%" textAlign="center">
+                    {item.isbn}
+                  </Text>
+                  <Text width="20%" textAlign="center">
+                    {item.title}
+                  </Text>
+                  <Text width="10%" textAlign="center">
+                    {item.sale_price}
+                  </Text>
+                  <Box display="flex" width="10%" justifyContent="center">
+                    <Text marginRight={4} textAlign="center">
+                      {item.amount}
+                    </Text>
+                    <Button
+                      marginRight={4}
+                      size="sm"
+                      onClick={(_) => incrementQuantity(idx)}
+                    >
+                      +
+                    </Button>
+                    <Button size="sm" onClick={(_) => decrementQuantity(idx)}>
+                      -
+                    </Button>
+                  </Box>
+                  <Button
+                    width="10%"
+                    textAlign="center"
+                    onClick={(_) => removeFromCart(idx, item.sale_price)}
+                  >
+                    Remove from Cart
+                  </Button>
+                </Box>
                 <Divider />
               </>
             );
           })}
+          <Heading textAlign={"end"} margin={6}>
+            Total: ${purchaseTotal}
+          </Heading>
           <Box margin={6} display="flex" justifyContent={"space-around"}>
             <Box display="flex" flexDirection="column">
               <Heading marginBottom={4}>Shipping Address</Heading>

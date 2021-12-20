@@ -7,9 +7,24 @@ const SignUp = () => {
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
-  //TODO: Connect sign up API
-  const signup = () => {
-    console.log(email, password);
+  const signup = async () => {
+    const res = await fetch("http://localhost:9756/api/user", {
+      method: "POST",
+      body: JSON.stringify({
+        username,
+        password,
+        email,
+        phone: phoneNumber,
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const user = await res.json();
+    localStorage.setItem("userID", user.userid);
+
+    user.admin === 1
+      ? (window.location.href = "http://localhost:3000/admin")
+      : (window.location.href = "http://localhost:3000/user");
   };
 
   return (

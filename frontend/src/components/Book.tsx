@@ -1,25 +1,51 @@
-import { Box, Text, Button } from "@chakra-ui/react";
-import { FC, MouseEventHandler } from "react";
+import { Box, Text, Button, Image } from "@chakra-ui/react";
+import { FC } from "react";
+import { IBook } from "./Users";
 
-interface BookProps {
-  title: string;
-  isbn: string;
-  author: string;
-  action: (title: string) => void;
+interface BookActions {
   actionText: string;
+  action: (
+    isbn: string,
+    title: string,
+    sale_price: number,
+    amount: number
+  ) => void;
 }
-
-const Book: FC<BookProps> = ({ title, isbn, author, action, actionText }) => {
+const Book: FC<IBook & BookActions> = ({
+  title,
+  isbn,
+  authors,
+  available,
+  sale_price,
+  actionText,
+  action,
+}) => {
   return (
-    <Box margin={6} display="flex" alignItems={"center"}>
-      <Box display="flex" width="50%" justifyContent="space-around">
-        <Text>{isbn}</Text>
-        <Text>{title}</Text>
-      </Box>
-      <Box display="flex" width="50%" justifyContent="space-around">
-        <Text>{author}</Text>
-        <Button onClick={(_) => action(title)}>{actionText}</Button>
-      </Box>
+    <Box
+      margin={6}
+      display="flex"
+      alignItems={"center"}
+      justifyContent={"space-between"}
+    >
+      <Text width="10%" textAlign={"center"}>
+        {isbn}
+      </Text>
+      <Text width="20%" textAlign={"center"}>
+        {title}
+      </Text>
+      <Text width="20%" textAlign={"center"}>
+        {authors && authors}
+      </Text>
+      <Text width="10%" textAlign={"center"}>
+        ${sale_price}
+      </Text>
+
+      <Text width="10%" textAlign={"center"}>
+        {available}
+      </Text>
+      <Button width="10%" onClick={(_) => action(isbn, title, sale_price, 1)}>
+        {actionText}
+      </Button>
     </Box>
   );
 };

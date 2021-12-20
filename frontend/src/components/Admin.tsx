@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Divider,
+  Heading,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
 } from "@chakra-ui/react";
 import Book from "./Book";
 
@@ -42,54 +42,52 @@ const Admin = () => {
 
       <TabPanels>
         <TabPanel>
-          <Box
-            margin={6}
-            display="flex"
-            justifyContent={"space-between"}
-            alignItems={"center"}
-          >
-            <Text>ISBN</Text>
-            <Text>Title</Text>
-            <Text>Genre</Text>
-            <Text></Text>
+          <Box margin={6} display="flex" alignItems={"center"}>
+            <Box display="flex" width="50%" justifyContent="space-around">
+              <Heading>ISBN</Heading>
+              <Heading>Title</Heading>
+            </Box>
+            <Box display="flex" width="50%" justifyContent="space-around">
+              <Heading>Author</Heading>
+              <Heading></Heading>
+            </Box>
           </Box>
           {books.map((book) => {
             return (
               <>
-                <Book
+                {/* <Book
                   title={book.title}
                   isbn={book.isbn}
                   author={book.author}
-                  actionText="Order"
+                  actionText="Order Book"
                   action={orderBook}
-                />
+                /> */}
                 <Divider />
               </>
             );
           })}
         </TabPanel>
         <TabPanel>
-          <Box
-            margin={6}
-            display="flex"
-            justifyContent={"space-between"}
-            alignItems={"center"}
-          >
-            <Text>ISBN</Text>
-            <Text>Title</Text>
-            <Text>Genre</Text>
-            <Text></Text>
+          <Box margin={6} display="flex" alignItems={"center"}>
+            <Box display="flex" width="50%" justifyContent="space-around">
+              <Heading>ISBN</Heading>
+              <Heading>Title</Heading>
+            </Box>
+            <Box display="flex" width="50%" justifyContent="space-around">
+              <Heading>Author</Heading>
+              <Heading></Heading>
+            </Box>
           </Box>
           {books.map((book) => {
             return (
               <>
-                <Book
+                {/* <Book
                   title={book.title}
                   isbn={book.isbn}
                   author={book.author}
-                  actionText="Remove"
+                  actionText="Remove Book"
                   action={removeBook}
-                />
+                /> */}
                 <Divider />
               </>
             );

@@ -5,9 +5,25 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  //TODO: Connect login to API
-  const login = () => {
-    console.log(username, password);
+  const login = async () => {
+    const res = await fetch("http://localhost:9756/api/session", {
+      method: "POST",
+      body: JSON.stringify({
+        username,
+        password,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const user = await res.json();
+    localStorage.setItem("userID", user.userid);
+    console.log(user);
+
+    user.admin === 1
+      ? (window.location.href = "http://localhost:3000/admin")
+      : (window.location.href = "http://localhost:3000/user");
   };
 
   return (
