@@ -100,7 +100,7 @@ const Admin = () => {
     });
 
     const publishers = await res.json();
-    setPublishers(publishers.items);
+    setPublishers(publishers);
   };
 
   const removeBook = async (isbn: string) => {
@@ -125,6 +125,30 @@ const Admin = () => {
         isClosable: true,
       });
     }
+  };
+
+  const createAuthor = async () => {
+    const res = await fetch(`${API_ADDR}/api/authors`, {
+      method: "POST",
+      body: JSON.stringify({
+        name: author,
+      }),
+    });
+
+    const newAuthor = await res.json();
+    return newAuthor;
+  };
+
+  const createGenre = async () => {
+    const res = await fetch(`${API_ADDR}/api/genres`, {
+      method: "POST",
+      body: JSON.stringify({
+        name: genre,
+      }),
+    });
+
+    const newGenre = await res.json();
+    return newGenre;
   };
 
   const addBook = async () => {
@@ -155,6 +179,13 @@ const Admin = () => {
         isClosable: true,
       });
     }
+
+    const author = await createAuthor();
+    const genre = await createGenre();
+  };
+
+  const addAuthorToBook = async (authorid: string) => {
+    const res = await fetch(`${API_ADDR}/api/books/${isbn}/authors`);
   };
 
   const generateReport = async (reportTitle: string) => {
@@ -179,6 +210,7 @@ const Admin = () => {
   useEffect(() => {
     getBooks();
     getReports();
+    getPublishers();
   }, []);
 
   return (

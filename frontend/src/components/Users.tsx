@@ -141,7 +141,7 @@ const User = () => {
     });
 
     const shippingAddresses = await res.json();
-    setShippingAddresses(shippingAddresses.items);
+    setShippingAddresses(shippingAddresses);
   };
 
   const getTrackedOrders = async () => {
@@ -152,7 +152,6 @@ const User = () => {
     });
 
     const trackedOrders = await res.json();
-    console.log(trackedOrders);
     setTrackedOrders(trackedOrders.items);
   };
 
