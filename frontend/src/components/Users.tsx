@@ -134,7 +134,7 @@ const User = () => {
   };
 
   const getShippingAddresses = async () => {
-    const res = await fetch(`${API_ADDR}/api/me/address`, {
+    const res = await fetch(`${API_ADDR}/api/user/me/address`, {
       method: "GET",
       credentials: "include",
       headers: { Auth: `${localStorage.getItem("userID")}` },
@@ -152,7 +152,7 @@ const User = () => {
     });
 
     const trackedOrders = await res.json();
-    console.log(trackedOrders)
+    console.log(trackedOrders);
     setTrackedOrders(trackedOrders.items);
   };
 
@@ -645,7 +645,7 @@ const User = () => {
                   {order.orderid}
                 </Text>
                 <Text width="30%" alignItems="center">
-                  {new Date(order.date*1000).toDateString()}
+                  {new Date(order.date * 1000).toDateString()}
                 </Text>
                 <Text width="20%" alignItems="center">
                   {order.tracking.postal}
