@@ -22,8 +22,8 @@ const Login = () => {
     console.log(user);
 
     user.admin === 1
-      ? (window.location.href = "http://localhost:3000/admin")
-      : (window.location.href = "http://localhost:3000/user");
+      ? (window.location.href = "/admin")
+      : (window.location.href = "/user");
   };
 
   return (

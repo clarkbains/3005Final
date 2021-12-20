@@ -1,5 +1,7 @@
 FROM mhart/alpine-node
 WORKDIR /app
-RUN touch frontend
-CMD npx -y http-server . -p 80
-EXPOSE 80/tcp
+COPY package.json .
+RUN npm install
+COPY . ./
+CMD npm run start
+EXPOSE 3000/tcp
