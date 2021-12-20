@@ -1,7 +1,7 @@
 const { Pool } = require('better-sqlite-pool');
 const path = require('path')
 const fs = require('fs')
-const WIPE_AT_START = true
+const WIPE_AT_START = false
 const SQL_FOLDER = path.join(__dirname, "SQL")
 
 function init() {

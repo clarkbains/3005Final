@@ -1,0 +1,20 @@
+<div>
+    <table>
+            <tr>
+              <td>Sales</td>
+              <td><%= data.sales%></td>
+            </tr>
+            <tr>
+              <td>Royalties</td>
+              <td><%= data.royalties%></td>
+            </tr>
+            <tr>
+              <td>Publisher Orders</td>
+              <td><%= data.pub_orders%></td>
+            </tr>
+            <tr>
+              <td>TOTAL</td>
+              <td><%= data.sales - data.royalties - data.pub_orders%></td>
+            </tr>
+    </table>
+</div>
