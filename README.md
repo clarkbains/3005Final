@@ -3,7 +3,7 @@
 ## About
 
 ## Running
-This project is containerized for easy use. With `docker-compose` installed and `docker` started, copy the `docker-compose-example.yml` file to `docker-compose.yml`, then simply run `docker-compose up --build` to start the project.
+This project is containerized for easy use. With `docker-compose` installed and `docker` started, copy the `docker-compose-example.yml` file to `docker-compose.yml`, then simply run `docker-compose up --build` to build and start the project.
 This configuration will expose a working frontend server on [localhost:9757](https://localhost:9757)
 
 ## Deployed Version
